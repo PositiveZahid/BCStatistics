@@ -1,4 +1,3 @@
-/*
 package iboxbd.broadband.statistics.sqlite;
 
 import java.text.SimpleDateFormat;
@@ -14,10 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import softoption.TeamTracker.Configuration.Configuration;
-import softoption.TeamTracker.ModelClass.LocationInformation;
-import softoption.TeamTracker.ModelClass.LogInformation;
-import softoption.TeamTracker.ModelClass.Message;
+import static iboxbd.broadband.statistics.utils.DateUtils.getDateTime;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -29,62 +25,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME       = "TEAM_TRACKER_SQLITE";
+    private static final String DATABASE_NAME = "BCStatistics";
 
     // Table Names
-    private static final String TABLE_LOCATION      = "LOCATION";
-    private static final String TABLE_LOG           = "LOG";
-    private static final String TABLE_MESSAGE       = "MESSAGE";
+    private static final String TABLE_CONNECTION = "CONNECTION";
 
-    // Location Table
-    private static final String LOCATION_ID         = "id";
-    private static final String LOCATION_LATITUDE   = "latitude";
-    private static final String LOCATION_LONGITUDE  = "longitude";
-    private static final String LOCATION_COMMENT    = "comment";
-    // 0 = unsynced, 1 = sysnced
-    private static final String LOCATION_SYNC_STATUS = "sync_status";
-    private static final String KEY_CREATED_AT      = "created_at";
-
-    // Log Table
-    private static final String LOG_ID              = "id";
-    private static final String LOG_INFORMATION     = "information";
-    // 0 = unsynced, 1 = sysnced
-    private static final String LOG_SYNC_STATUS     = "sync_status";
-
-
-    // Message Table - column names
-    private static final String MESSAGE_ID          = "id";
-    private static final String MESSAGE_DETAIL      = "detail";
-    private static final String MESSAGE_SENT_BY     = "sent_by";
-    // 0 = unsynced, 1 = sysnced
-    private static final String MESSAGE_SYNC_STATUS = "sync_status";
-
-
+    // CONNECTION Table
+    private static final String CONNECTION_ID = "ID";
+    private static final String CONNECTION_ISCONNECT = "ISCONNECT";
+    private static final String CONNECTION_ISSYNCED = "ISSYNCED";
+    private static final String CONNECTION_DATETIME = "DATETIME";
 
 
     // Table Create Statements
-    // LOCATION table create statement
-    private static final String CREATE_TABLE_LOCATION = "CREATE TABLE "
-            + TABLE_LOCATION + "(" + LOCATION_ID + " INTEGER PRIMARY KEY,"
-            + LOCATION_LATITUDE+ " TEXT,"
-            + LOCATION_LONGITUDE + " TEXT,"
-            + LOCATION_COMMENT + " TEXT,"
-            + LOCATION_SYNC_STATUS + " TEXT,"
-            + KEY_CREATED_AT+ " DATETIME" + ")";
-
-    // LOG table create statement
-    private static final String CREATE_TABLE_LOG = "CREATE TABLE "
-            + TABLE_LOG+ "(" + LOG_ID + " INTEGER PRIMARY KEY,"
-            + LOG_INFORMATION + " TEXT,"
-            + LOG_SYNC_STATUS + " TEXT,"
-            + KEY_CREATED_AT + " DATETIME" + ")";
-
-    // MESSAGE table create statement
-    private static final String CREATE_TABLE_MESSAGE = "CREATE TABLE "
-            + TABLE_MESSAGE + "(" + MESSAGE_ID + " INTEGER PRIMARY KEY,"
-            + MESSAGE_SENT_BY + " TEXT,"
-            + MESSAGE_DETAIL + " TEXT,"
-            + KEY_CREATED_AT + " DATETIME" + ")";
+    // CONNECTION table create statement
+    private static final String CREATE_TABLE_CONNECTION = "CREATE TABLE "
+            + TABLE_CONNECTION + "(" + CONNECTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + CONNECTION_ISCONNECT + " TEXT,"
+            + CONNECTION_ISSYNCED + " TEXT,"
+            + CONNECTION_DATETIME + " DATETIME" + " )";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -92,86 +51,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         // creating required tables
-        db.execSQL(CREATE_TABLE_LOCATION);
-        db.execSQL(CREATE_TABLE_LOG);
-        db.execSQL(CREATE_TABLE_MESSAGE);
+        db.execSQL(CREATE_TABLE_CONNECTION);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOG);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGE);
-
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONNECTION);
         // create new tables
         onCreate(db);
     }
 
-    // ------------------------ "location" table methods ----------------//
+    // ------------------------ "CONNECTION" table methods ----------------//
 
-    */
-/**
-     * Creating a location
-     *//*
-
-    public long createLocation(LocationInformation location) {
+    /* Creating a CONNECTION */
+    public long createConnection(Connection connection) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(LOCATION_LATITUDE, location.getLatitude());
-        values.put(LOCATION_LONGITUDE, location.getLongitude());
-        values.put(LOCATION_COMMENT, location.getComment());
-        values.put(LOCATION_SYNC_STATUS,location.getSyncStatus());
-        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(CONNECTION_ISCONNECT, connection.getIsConnected());
+        values.put(CONNECTION_ISSYNCED, connection.getIsSynced());
+        values.put(CONNECTION_DATETIME, getDateTime());
 
         // insert row
-        long location_id = db.insert(TABLE_LOCATION, null, values);
-        Log.d(Configuration.databaseTAG, String.valueOf(location_id)+" inserted");
-        return location_id;
+
+        long Connection_id = db.insert(TABLE_CONNECTION, null, values);
+        return Connection_id;
     }
 
-    */
-/**
-     * get single location
-     *//*
 
-    public LocationInformation getLocationById(long location_id) {
+     /* get single CONNECTION*/
+
+    public Connection getConnectionById(long connection_id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT  * FROM " + TABLE_LOCATION + " WHERE "
-                + LOCATION_ID + " = " + location_id;
-
-        Log.d(Configuration.databaseTAG, selectQuery);
+        String selectQuery = "SELECT  * FROM " + TABLE_CONNECTION + " WHERE "
+                + CONNECTION_ID + " = " + connection_id;
 
         Cursor c = db.rawQuery(selectQuery, null);
 
         if (c != null)
             c.moveToFirst();
 
-        LocationInformation location = new LocationInformation();
-        location.setId(c.getInt(c.getColumnIndex(LOCATION_ID)));
-        location.setLatitude((c.getString(c.getColumnIndex(LOCATION_LATITUDE))));
-        location.setLongitude((c.getString(c.getColumnIndex(LOCATION_LONGITUDE))));
-        location.setComment((c.getString(c.getColumnIndex(LOCATION_COMMENT))));
-        location.setSyncStatus((c.getString(c.getColumnIndex(LOCATION_SYNC_STATUS))));
-        location.setCreated(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+        Connection connection = new Connection();
+        connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+        connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
+        connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+        connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
-        return location;
+        return connection;
     }
 
-    */
-/**
-     * getting all locations
-     * *//*
 
-    public List<LocationInformation> getAllLocations() {
-        List<LocationInformation> locations = new ArrayList<LocationInformation>();
-        String selectQuery = "SELECT  * FROM " + TABLE_LOCATION;
+    /**
+     * getting all CONNECTIONs
+     */
 
-        Log.e(Configuration.databaseTAG, selectQuery);
+    public List<Connection> getAllConnections() {
+        List<Connection> connections = new ArrayList<Connection>();
+        String selectQuery = "SELECT  * FROM " + TABLE_CONNECTION;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -179,26 +119,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                LocationInformation location = new LocationInformation();
-                location.setId(c.getInt(c.getColumnIndex(LOCATION_ID)));
-                location.setLatitude((c.getString(c.getColumnIndex(LOCATION_LATITUDE))));
-                location.setLongitude((c.getString(c.getColumnIndex(LOCATION_LONGITUDE))));
-                location.setComment((c.getString(c.getColumnIndex(LOCATION_COMMENT))));
-                location.setSyncStatus((c.getString(c.getColumnIndex(LOCATION_SYNC_STATUS))));
-                location.setCreated(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                Connection connection = new Connection();
+                connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
+                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
-                // adding to location list
-                locations.add(location);
+                // adding to CONNECTION list
+                connections.add(connection);
             } while (c.moveToNext());
         }
 
-        return locations;
+        return connections;
     }
-    public List<LocationInformation> getAllUnSyncedLocation() {
-        List<LocationInformation> locations = new ArrayList<LocationInformation>();
-        String selectQuery = "SELECT  * FROM " + TABLE_LOCATION +" WHERE "+LOCATION_SYNC_STATUS+" = 0";
 
-        Log.e(Configuration.databaseTAG, selectQuery);
+    public List<Connection> getConnectionBySyncStatus(String isSynced) {
+        List<Connection> connections = new ArrayList<Connection>();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_CONNECTION + " WHERE " + CONNECTION_ISSYNCED + " = " + isSynced;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -206,29 +144,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                LocationInformation location = new LocationInformation();
-                location.setId(c.getInt(c.getColumnIndex(LOCATION_ID)));
-                location.setLatitude((c.getString(c.getColumnIndex(LOCATION_LATITUDE))));
-                location.setLongitude((c.getString(c.getColumnIndex(LOCATION_LONGITUDE))));
-                location.setComment((c.getString(c.getColumnIndex(LOCATION_COMMENT))));
-                location.setSyncStatus((c.getString(c.getColumnIndex(LOCATION_SYNC_STATUS))));
-                location.setCreated(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                Connection connection = new Connection();
+                connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
+                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
-                // adding to location list
-                locations.add(location);
+                // adding to CONNECTION list
+                connections.add(connection);
             } while (c.moveToNext());
         }
 
-        return locations;
+        return connections;
     }
 
-    */
-/**
-     * getting location count
-     *//*
+    /**
+     * getting CONNECTION count
+     */
 
-    public int getLocationCount() {
-        String countQuery = "SELECT  * FROM " + TABLE_LOCATION;
+
+    public int getConnectionCount() {
+        String countQuery = "SELECT  * FROM " + TABLE_CONNECTION;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
@@ -240,8 +176,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public int getUnSyncedLocationCount() {
-        String countQuery = "SELECT  * FROM " + TABLE_LOCATION+" WHERE "+LOCATION_SYNC_STATUS+" = 0";
+    public int getConnectionCountBySync(String isSynced) {
+        String countQuery = "SELECT  * FROM " + TABLE_CONNECTION + " WHERE " + CONNECTION_ISSYNCED + " = " + isSynced;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
@@ -252,59 +188,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // return count
         return count;
     }
-    */
-/**
-     * Updating a location
-     *//*
 
-    public int updateLocation(LocationInformation location) {
+    /**
+     * Updating a CONNECTION
+     */
+
+    public int updateConnection(Connection connection) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(LOCATION_LATITUDE, location.getLatitude());
-        values.put(LOCATION_LONGITUDE, location.getLongitude());
-        values.put(LOCATION_COMMENT, location.getComment());
-        values.put(LOCATION_SYNC_STATUS, location.getSyncStatus());
-        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(CONNECTION_ISSYNCED, connection.getIsSynced());
+        values.put(CONNECTION_ISCONNECT, connection.getIsConnected());
+        values.put(CONNECTION_DATETIME, connection.getDateTime());
 
         // updating row
-        return db.update(TABLE_LOCATION, values, LOCATION_ID + " = ?",
-                new String[] { String.valueOf(location.getId()) });
+        return db.update(TABLE_CONNECTION, values, CONNECTION_ID + " = ?",
+                new String[]{String.valueOf(connection.getID())});
     }
-    */
-/**
-     * Updating a location
-     *//*
 
-    */
-/*public int updateLocationStatus(String id, String status) {
+    /*
+     * Updating a CONNECTION
+     */
+
+    public int updateConnectionStatus(String id, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(LOCATION_LATITUDE, location.getLatitude());
-        values.put(LOCATION_LONGITUDE, location.getLongitude());
-        values.put(LOCATION_COMMENT, location.getComment());
-        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(CONNECTION_ISCONNECT, status);
 
         // updating row
-        return db.update(TABLE_LOCATION, values, LOCATION_ID + " = ?",
-                new String[] { String.valueOf(location.getId()) });
-    }*//*
-
-    */
-/**
-     * Deleting a Location
-     *//*
-
-    public void deleteLocationById(long location_id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_LOCATION, LOCATION_ID + " = ?",
-                new String[] { String.valueOf(location_id) });
+        return db.update(TABLE_CONNECTION, values, CONNECTION_ID + " = ?",
+                new String[]{String.valueOf(id)});
     }
 
+    /**
+     * Deleting a CONNECTION
+     */
+
+    public void deleteConnectionById(long connection_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_CONNECTION, CONNECTION_ID + " = ?",
+                new String[]{String.valueOf(connection_id)});
+    }
+
+    public void close() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (db != null && db.isOpen())
+            db.close();
+    }
+}
     // ------------------------ "Log" table methods ----------------//
 
-    */
+
 /**
      * Creating log
      *//*

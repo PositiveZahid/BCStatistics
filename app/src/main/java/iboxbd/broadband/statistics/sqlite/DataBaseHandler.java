@@ -1,9 +1,11 @@
+/*
 package iboxbd.broadband.statistics.sqlite;
 
 import java.lang.reflect.Field;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -18,18 +20,22 @@ import iboxbd.broadband.statistics.utils.DateUtils;
 import iboxbd.broadband.statistics.utils.ReflectionUtils;
 import iboxbd.broadband.statistics.utils.StringUtils;
 
+*/
 /**
  * This class uses java class reflection for dynamic SQlite managment
- */
+ *//*
+
 public class DataBaseHandler extends SQLiteOpenHelper {
     //TAG (Class name) for Log tagging
     String LOG_TAG = getClass().getSimpleName();
 
-    /**
+    */
+/**
      * Initialize databaser with its name and version
      *
      * @param context Application context
-     */
+     *//*
+
     public DataBaseHandler(Context context) {
         super(
                 context,
@@ -41,20 +47,24 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
     @Override
 
-    public void onCreate(SQLiteDatabase db) {/*DO NOTHING*/}
+    public void onCreate(SQLiteDatabase db) {*/
+/*DO NOTHING*//*
+}
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onCreate(db);
     }
 
-    /**
+    */
+/**
      * Creates table using reflection of given object,
      * each member of given object will be converted to a row in a database table.
      * if used primitive convertible to Sqlite format types.
      *
      * @param object an object on which reflection will be based the table creation
-     */
+     *//*
+
     public void CreateTable(DB_BASIC object) {
         if (object != null) {
             SQLiteDatabase db = null;
@@ -75,28 +85,56 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                 sbCreateTable.append(ConstantsCollection.SQLITE_CREATE_TABLE_IF_NOT_EXISTS);
                 sbCreateTable.append(tableName);
                 sbCreateTable.append(ConstantsCollection.SQLITE_OPENNING_BRACKET);
-
+                //String[] freshField = new String[fields.length];
+                int j = 0;
                 //Iterates on the given object fields using reflection
                 //and creates appropriate column definition
                 for (int i = 0; i < fields.length; i++) {
-                    String fieldName = fields[i].getName();
+                    String fieldName    = fields[i].getName();
 
-                    if (fieldName.equalsIgnoreCase(ConstantsCollection.ID)) {//Creates an auto increament index named ID
-                        sbCreateTable.append(fieldName);
-                        sbCreateTable.append(ConstantsCollection.SQLITE_INTEGER_PRIMARY_KEY_AUTOINCREMENT);
-                    } else {//Creates column declaration
+
+                    if(fieldName.equalsIgnoreCase("$change") ){
+
+                    }else if(j == 0 && fieldName.equalsIgnoreCase("serialVersionUID")){
                         String rowname = GetSqliteType(fields[i].getType());
+                        System.out.print("j :: "+j);
 
                         if (rowname != null) {
                             sbCreateTable.append(fieldName);
                             sbCreateTable.append(ConstantsCollection.SQLITE_SPACE);
                             sbCreateTable.append(rowname);
-                        }
-                    }
 
-                    if (i != fields.length - 1) {//Allways adds , in the end of each column declaration except the last one
-                        sbCreateTable.append(ConstantsCollection.SQLITE_COMMA);
-                        sbCreateTable.append(ConstantsCollection.SQLITE_SPACE);
+                            if (i != fields.length - 1) {//Allways adds , in the end of each column declaration except the last one
+                                sbCreateTable.append(ConstantsCollection.SQLITE_COMMA);
+                                sbCreateTable.append(ConstantsCollection.SQLITE_SPACE);
+                            }
+                        }
+                        j=j+1;
+                    }else{
+                        if (fieldName.equalsIgnoreCase(ConstantsCollection.ID)) {//Creates an auto increament index named ID
+                            sbCreateTable.append(fieldName);
+                            sbCreateTable.append(ConstantsCollection.SQLITE_INTEGER_PRIMARY_KEY_AUTOINCREMENT);
+
+                            */
+/*if (i != fields.length - 1) {//Allways adds , in the end of each column declaration except the last one
+                                sbCreateTable.append(ConstantsCollection.SQLITE_COMMA);
+                                sbCreateTable.append(ConstantsCollection.SQLITE_SPACE);
+                            }*//*
+
+                        } else {//Creates column declaration
+                            String rowname = GetSqliteType(fields[i].getType());
+
+                            if (rowname != null) {
+                                sbCreateTable.append(fieldName);
+                                sbCreateTable.append(ConstantsCollection.SQLITE_SPACE);
+                                sbCreateTable.append(rowname);
+
+                                if (i != fields.length - 1) {//Allways adds , in the end of each column declaration except the last one
+                                    sbCreateTable.append(ConstantsCollection.SQLITE_COMMA);
+                                    sbCreateTable.append(ConstantsCollection.SQLITE_SPACE);
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -105,7 +143,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                 sbCreateTable.append(ConstantsCollection.SQLITE_CLOSING_SEMICOLUMN);
 
                 //Executes raw SQlite statement
-                db.execSQL(sbCreateTable.toString());
+                //db.execSQL(sbCreateTable.toString());
             } catch (SecurityException e) {
                 Log.e(LOG_TAG, e.toString());
             } catch (Exception e) {
@@ -117,11 +155,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    /**
+    */
+/**
      * Finds appropriate Sqlite raw string class to given java class
      *
      * @return Sqlite row format
-     */
+     *//*
+
     private String GetSqliteType(Class<?> c) {
         String type = "TEXT";
 
@@ -138,12 +178,14 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return type;
     }
 
-    /**
+    */
+/**
      * Adds given object to the database, by its class name. Perform INSERT Sqlite operation
      *
      * @param object to be inserted
      * @return id of the inserted object
-     */
+     *//*
+
     public long AddNewObject(DB_BASIC object) {
         long result = ConstantsCollection.INDEX_NOT_DEFINED;
         if (object != null) {
@@ -190,11 +232,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    /**
+    */
+/**
      * Gets the value of the fields in specified object using reflection
      *
      * @return the value of the field
-     */
+     *//*
+
     private Object GetValue(Field field, DB_BASIC object) {
         Object result = null;
         try {
@@ -207,12 +251,14 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    /**
+    */
+/**
      * Deletes the table from database
      *
      * @param tblClass table object
      * @return the number of rows affected if a whereClause is passed in, 0 otherwise.
-     */
+     *//*
+
     public int DeleteTable(Class<? extends DB_BASIC> tblClass) {
         int result = -1;
         SQLiteDatabase db = null;
@@ -227,13 +273,15 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    /**
+    */
+/**
      * Converts cursor to List of objects
      *
      * @param cursor database cursor
      * @param clazz  the desired clazz
      * @return converted cursor object to List collection
-     **/
+     **//*
+
     @SuppressWarnings("unchecked")
     private <T> List<T> ConvertCursorToObjects(Cursor cursor, Class<? extends DB_BASIC> clazz) {
         List<T> list = new ArrayList<T>();
@@ -298,11 +346,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return list;
     }
 
-    /**
+    */
+/**
      * Gets all data from specified table by class instance
      *
      * @return null if no objects are located, List<DB_BASIC> there is records
-     */
+     *//*
+
     public List<DB_BASIC> GetTableData(Class<? extends DB_BASIC> clazz) {
         List<DB_BASIC> list;
         String tableName = ReflectionUtils.GetClassName(clazz);
@@ -321,11 +371,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return list;
     }
 
-    /**
+    */
+/**
      * Updates row in relevant table, specified by class instance
      *
      * @return number of updated rows or -1 on fail
-     */
+     *//*
+
     public int UpdateRow(DB_BASIC object) {
         int result = ConstantsCollection.INDEX_NOT_DEFINED;
 
@@ -361,9 +413,11 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    /**
+    */
+/**
      * @return String value of the object
-     */
+     *//*
+
     private String GetStringValue(Field field, DB_BASIC object) {
         Class<?> type = field.getType();
         String result = null;
@@ -385,11 +439,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    /**
+    */
+/**
      * Closes database connection
      *
      * @param db database reference
-     */
+     *//*
+
     private void CloseDB(SQLiteDatabase db) {
         try {
             if (db != null) {
@@ -400,4 +456,18 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         }
 
     }
+
+    private boolean duplicateCheck(String[] names ){
+        boolean duplicate = false;
+
+        for (int i = 0; i < names.length; i++) {
+            for (int j = i + 1 ; j < names.length; j++) {
+                if (names[i].equals(names[j])) {
+                    duplicate =true;
+                }
+            }
+        }
+        return duplicate;
+    }
 }
+*/
