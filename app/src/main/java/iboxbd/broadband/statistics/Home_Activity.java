@@ -1,7 +1,10 @@
 package iboxbd.broadband.statistics;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
@@ -12,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import iboxbd.broadband.statistics.sqlite.AndroidDatabaseManager;
 import iboxbd.broadband.statistics.sqlite.Connection;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.utils.DateUtils;
@@ -59,6 +63,16 @@ public class Home_Activity extends AppCompatActivity {
         }catch (Exception e){
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG).show();
         }
+
+        Button button = (Button) findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent dbmanager = new Intent(Home_Activity.this,AndroidDatabaseManager.class);
+                startActivity(dbmanager);
+            }
+        });
     }
 
     public DatabaseHelper GetDB() {
