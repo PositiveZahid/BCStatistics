@@ -1,10 +1,7 @@
 package iboxbd.broadband.statistics.sqlite;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,6 +11,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import iboxbd.broadband.statistics.model.Connection;
+import iboxbd.broadband.statistics.model.LogData;
 
 import static iboxbd.broadband.statistics.utils.DateUtils.getDateTime;
 
@@ -30,13 +30,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "BCStatistics";
 
     // Table Names
-    private static final String TABLE_CONNECTION = "CONNECTION";
+    private static final String TABLE_CONNECTION    = "CONNECTION";
+    private static final String TABLE_LOG           = "LOG";
 
     // CONNECTION Table
     private static final String CONNECTION_ID = "ID";
     private static final String CONNECTION_ISCONNECT = "ISCONNECT";
     private static final String CONNECTION_ISSYNCED = "ISSYNCED";
     private static final String CONNECTION_DATETIME = "DATETIME";
+
+    // Log Table
+    private static final String LOG_ID = "ID";
+    private static final String LOG_LOG = "LOG";
+    private static final String LOG_ISSYNCED = "ISSYNCED";
+    private static final String LOG_DATETIME = "DATETIME";
 
 
     // Table Create Statements
@@ -47,6 +54,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + CONNECTION_ISSYNCED + " TEXT,"
             + CONNECTION_DATETIME + " DATETIME" + " )";
 
+    // LOG table create statement
+    private static final String CREATE_TABLE_LOG = "CREATE TABLE "
+            + TABLE_LOG + "(" + LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + LOG_LOG + " TEXT,"
+            + LOG_ISSYNCED + " TEXT,"
+            + LOG_DATETIME + " DATETIME" + ")";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -55,6 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // creating required tables
         db.execSQL(CREATE_TABLE_CONNECTION);
+        db.execSQL(CREATE_TABLE_LOG);
 
     }
 
@@ -62,13 +77,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONNECTION);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOG);
         // create new tables
         onCreate(db);
     }
 
     // ------------------------ "CONNECTION" table methods ----------------//
 
-    /* Creating a CONNECTION */
+    /*      Creating a CONNECTION        */
     public long createConnection(Connection connection) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -83,9 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return Connection_id;
     }
 
-
-     /* get single CONNECTION*/
-
+    /*      get single CONNECTION           */
     public Connection getConnectionById(long connection_id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -106,11 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return connection;
     }
 
-
-    /**
-     * getting all CONNECTIONs
-     */
-
+    /*      getting all CONNECTIONs      */
     public List<Connection> getAllConnections() {
         List<Connection> connections = new ArrayList<Connection>();
         String selectQuery = "SELECT  * FROM " + TABLE_CONNECTION;
@@ -160,11 +170,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return connections;
     }
 
-    /**
-     * getting CONNECTION count
-     */
-
-
+    /*      getting CONNECTION count          */
     public int getConnectionCount() {
         String countQuery = "SELECT  * FROM " + TABLE_CONNECTION;
 
@@ -191,10 +197,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    /**
-     * Updating a CONNECTION
-     */
-
+    /*      Updating a CONNECTION           */
     public int updateConnection(Connection connection) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -208,10 +211,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(connection.getID())});
     }
 
-    /*
-     * Updating a CONNECTION
-     */
-
+    /*     Updating a CONNECTION     */
     public int updateConnectionStatus(String id, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -223,10 +223,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(id)});
     }
 
-    /**
-     * Deleting a CONNECTION
-     */
-
+    /*      Deleting a CONNECTION     */
     public void deleteConnectionById(long connection_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CONNECTION, CONNECTION_ID + " = ?",
@@ -238,78 +235,87 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (db != null && db.isOpen())
             db.close();
     }
-    public ArrayList<Cursor> getData(String Query){
+
+    public ArrayList<Cursor> getData(String Query) {
         //get writable database
         SQLiteDatabase sqlDB = this.getWritableDatabase();
-        String[] columns = new String[] { "message" };
+        String[] columns = new String[]{"message"};
         //an array list of cursor to save two cursors one has results from the query
         //other cursor stores error message if any errors are triggered
         ArrayList<Cursor> alc = new ArrayList<Cursor>(2);
-        MatrixCursor Cursor2= new MatrixCursor(columns);
+        MatrixCursor Cursor2 = new MatrixCursor(columns);
         alc.add(null);
         alc.add(null);
 
-        try{
-            String maxQuery = Query ;
+        try {
+            String maxQuery = Query;
             //execute the query results will be save in Cursor c
             Cursor c = sqlDB.rawQuery(maxQuery, null);
 
             //add value to cursor2
-            Cursor2.addRow(new Object[] { "Success" });
+            Cursor2.addRow(new Object[]{"Success"});
 
-            alc.set(1,Cursor2);
+            alc.set(1, Cursor2);
             if (null != c && c.getCount() > 0) {
 
-                alc.set(0,c);
+                alc.set(0, c);
                 c.moveToFirst();
 
-                return alc ;
+                return alc;
             }
             return alc;
-        } catch(SQLException sqlEx){
+        } catch (SQLException sqlEx) {
             Log.d("printing exception", sqlEx.getMessage());
             //if any exceptions are triggered save the error message to cursor an return the arraylist
-            Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
-            alc.set(1,Cursor2);
+            Cursor2.addRow(new Object[]{"" + sqlEx.getMessage()});
+            alc.set(1, Cursor2);
             return alc;
-        } catch(Exception ex){
+        } catch (Exception ex) {
             Log.d("printing exception", ex.getMessage());
 
             //if any exceptions are triggered save the error message to cursor an return the arraylist
-            Cursor2.addRow(new Object[] { ""+ex.getMessage() });
-            alc.set(1,Cursor2);
+            Cursor2.addRow(new Object[]{"" + ex.getMessage()});
+            alc.set(1, Cursor2);
             return alc;
         }
     }
-}
+
     // ------------------------ "Log" table methods ----------------//
 
-
-/**
-     * Creating log
-     *//*
-
-    public long createLogInformation(LogInformation log) {
+    /*       Creating log      */
+    public long createLOG(LogData log) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(LOG_INFORMATION, log.getInformation());
-        values.put(LOG_SYNC_STATUS, log.getSyncStatus());
-        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(LOG_LOG, log.getLog());
+        values.put(LOG_ISSYNCED, log.getIsSynced());
+        values.put(LOG_DATETIME, log.getDateTime());
 
         // insert row
         long log_id = db.insert(TABLE_LOG, null, values);
-
         return log_id;
     }
-
-    */
+}
 /**
-     * getting all logs
-     * *//*
+ * getting all logs
+ * <p>
+ * Updating a log
+ * <p>
+ * Deleting a log
+ * <p>
+ * Creating Message
+ * <p>
+ * getting all logs
+ * <p>
+ * Updating a log
+ * <p>
+ * Deleting a log
+ * <p>
+ * get datetime
+ *//*
 
-    public List<LogInformation> getAllLog() {
-        List<LogInformation> logs = new ArrayList<LogInformation>();
+    public List<LOG_DATA> getAllLog() {
+        List<LOG_DATA> logs = new ArrayList<LOG_DATA>();
         String selectQuery = "SELECT  * FROM " + TABLE_LOG;
 
         Log.e(LOG, selectQuery);
@@ -320,11 +326,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                LogInformation t = new LogInformation();
+                LOG_DATA t = new LOG_DATA();
                 t.setId(c.getInt((c.getColumnIndex(LOG_ID))));
-                t.setInformation(c.getString(c.getColumnIndex(LOG_INFORMATION)));
-                t.setSyncStatus(c.getString(c.getColumnIndex(LOG_SYNC_STATUS)));
-                t.setCreated(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                t.setInformation(c.getString(c.getColumnIndex(LOG_LOG)));
+                t.setSyncStatus(c.getString(c.getColumnIndex(LOG_ISSYNCED)));
+                t.setCreated(c.getString(c.getColumnIndex(LOG_DATETIME)));
 
                 // adding to logs list
                 logs.add(t);
@@ -335,15 +341,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     */
 /**
-     * Updating a log
-     *//*
+ * Updating a log
+ *//*
 
-    public int updateLogInformation(LogInformation log) {
+    public int updateLOG_DATA(LOG_DATA log) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(LOG_INFORMATION, log.getInformation());
-        values.put(LOG_SYNC_STATUS, log.getSyncStatus());
+        values.put(LOG_LOG, log.getInformation());
+        values.put(LOG_ISSYNCED, log.getSyncStatus());
 
         // updating row
         return db.update(TABLE_LOG, values, LOG_ID + " = ?",
@@ -351,7 +357,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getUnSyncedLogCount() {
-        String countQuery = "SELECT  * FROM " + TABLE_LOG+" WHERE "+LOG_SYNC_STATUS+" = 0";
+        String countQuery = "SELECT  * FROM " + TABLE_LOG+" WHERE "+LOG_ISSYNCED+" = 0";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
@@ -363,9 +369,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public List<LogInformation> getAllUnSyncedLog() {
-        List<LogInformation> logs = new ArrayList<LogInformation>();
-        String selectQuery = "SELECT  * FROM " + TABLE_LOG +" WHERE "+LOG_SYNC_STATUS+" = 0";
+    public List<LOG_DATA> getAllUnSyncedLog() {
+        List<LOG_DATA> logs = new ArrayList<LOG_DATA>();
+        String selectQuery = "SELECT  * FROM " + TABLE_LOG +" WHERE "+LOG_ISSYNCED+" = 0";
 
         Log.e(Configuration.databaseTAG, selectQuery);
 
@@ -375,11 +381,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                LogInformation t = new LogInformation();
+                LOG_DATA t = new LOG_DATA();
                 t.setId(c.getInt((c.getColumnIndex(LOG_ID))));
-                t.setInformation(c.getString(c.getColumnIndex(LOG_INFORMATION)));
-                t.setSyncStatus(c.getString(c.getColumnIndex(LOG_SYNC_STATUS)));
-                t.setCreated(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                t.setInformation(c.getString(c.getColumnIndex(LOG_LOG)));
+                t.setSyncStatus(c.getString(c.getColumnIndex(LOG_ISSYNCED)));
+                t.setCreated(c.getString(c.getColumnIndex(LOG_DATETIME)));
 
                 logs.add(t);
             } while (c.moveToNext());
@@ -389,10 +395,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     */
 /**
-     * Deleting a log
-     *//*
+ * Deleting a log
+ *//*
 
-    public void deleteLogInformation(LogInformation log, boolean should_delete_all_log_todos) {
+    public void deleteLOG_DATA(LOG_DATA log, boolean should_delete_all_log_todos) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // before deleting log
@@ -419,8 +425,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     */
 /**
-     * Creating Message
-     *//*
+ * Creating Message
+ *//*
 
     public long createMessage(Message message) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -438,8 +444,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     */
 /**
-     * getting all logs
-     * *//*
+ * getting all logs
+ * *//*
 
     public List<Message> getAllMessage() {
         List<Message> messages = new ArrayList<Message>();
@@ -468,8 +474,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     */
 /**
-     * Updating a log
-     *//*
+ * Updating a log
+ *//*
 
     public int updateMessage(Message message) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -485,8 +491,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     */
 /**
-     * Deleting a log
-     *//*
+ * Deleting a log
+ *//*
 
     public void deleteMessage(Message message, boolean should_delete_all_log_todos) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -520,8 +526,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     */
 /**
-     * get datetime
-     * *//*
+ * get datetime
+ * *//*
 
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(

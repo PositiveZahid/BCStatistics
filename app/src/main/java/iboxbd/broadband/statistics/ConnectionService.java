@@ -7,19 +7,23 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
+import iboxbd.broadband.statistics.model.LogData;
 import iboxbd.broadband.statistics.phone.InternetConnection;
-import iboxbd.broadband.statistics.sqlite.Connection;
+import iboxbd.broadband.statistics.model.Connection;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.utils.DateUtils;
 
 public class ConnectionService extends Service {
     Connection connection;
-    DatabaseHelper database;
-    @Nullable
+    DatabaseHelper dbh;
     @Override
-    public IBinder onBind(Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startId){
+        dbh = new DatabaseHelper(getApplicationContext());
+        Toast.makeText(getApplicationContext(),"Connection Service Running ........!!! ",Toast.LENGTH_LONG).show();
         System.out.print("Feedback : #003 Connection Service Started");
+        dbh.createLOG(new LogData("#003","false", DateUtils.getDateTime()));
         connection = new Connection();
         Handler connectionTest = new Handler() {
             @Override
@@ -29,8 +33,8 @@ public class ConnectionService extends Service {
                     connection.setDateTime(DateUtils.getDateTime());
                     connection.setIsConnected("false");
                     connection.setIsSynced("false");
-                    database.createConnection(connection);
-                    database.close();
+                    dbh.createConnection(connection);
+                    dbh.close();
                 } else { // code if connected
 
                     try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
@@ -41,14 +45,18 @@ public class ConnectionService extends Service {
                     connection.setDateTime(DateUtils.getDateTime());
                     connection.setIsConnected("true");
                     connection.setIsSynced("false");
-                    database.createConnection(connection);
-                    database.close();
+                    dbh.createConnection(connection);
+                    dbh.close();
                 }
             }
         };
 
         InternetConnection.isNetworkAvailable("http://www.google.com",connectionTest,2000);
 
+        return Service.START_STICKY_COMPATIBILITY;
+    }
+    @Override
+    public IBinder onBind(Intent intent) {
         return null;
     }
 }

@@ -1,4 +1,6 @@
-package iboxbd.broadband.statistics.sqlite;
+package iboxbd.broadband.statistics.model;
+
+import iboxbd.broadband.statistics.sqlite.DB_BASIC;
 
 public class Connection extends DB_BASIC
 {

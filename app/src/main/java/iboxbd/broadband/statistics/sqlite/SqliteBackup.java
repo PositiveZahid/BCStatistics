@@ -1,4 +1,4 @@
-package iboxbd.broadband.statistics.utils;
+package iboxbd.broadband.statistics.sqlite;
 
 /**
  * Created by ZahiD on 07-Aug-17.
