@@ -28,13 +28,13 @@ android:paddingRight="16dp" >
     android:layout_below="@id/times"
     android:layout_alignParentRight="true"
     android:text="string/done"
-    android:id="@+id/button" />-->
+    android:id="@+id/button" />
 <Button
     android:id="@+id/database"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Database" />
-<!--<Button
+<Button
     android:id="@+id/alarmStart"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -49,5 +49,5 @@ android:paddingRight="16dp" >
     android:text="Alarm Stop"
     android:layout_marginTop="49dp"
     android:layout_below="@+id/alarmStart"
-    android:layout_alignStart="@+id/alarmStart" /-->>
+    android:layout_alignStart="@+id/alarmStart" /-->
 </RelativeLayout>
