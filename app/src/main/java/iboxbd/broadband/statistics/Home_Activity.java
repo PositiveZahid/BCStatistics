@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -79,7 +80,8 @@ public class Home_Activity extends AppCompatActivity {
         startAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                StartAlarm(getApplicationContext());
+                //StartAlarm(getApplicationContext());
+                startAlert();
             }
         });
 
@@ -118,6 +120,7 @@ public class Home_Activity extends AppCompatActivity {
         am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60  , pi);*/
         _dbHelper = new DatabaseHelper(context);
         System.out.print("Feedback : #004 Repeat Receiver Started");
+        Log.i("#004","Repeat Receiver Started");
         Toast.makeText(context,"Feedback : #004 Repeat Receiver Started",Toast.LENGTH_LONG).show();
         _dbHelper.createLOG(new LogData("#004","false", DateUtils.getDateTime()));
 
@@ -136,6 +139,36 @@ public class Home_Activity extends AppCompatActivity {
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(sender);
+    }
+
+    public void startAlert() {
+        //EditText text = (EditText) findViewById(R.id.time);
+        /*int i = Integer.parseInt("10");
+        Intent intent = new Intent(this, RepeatReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this.getApplicationContext(), 234324243, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
+                + (i * 1000), pendingIntent);*/
+
+        Intent broadcastIntent = new Intent(Home_Activity.this, RepeatReceiver.class);
+
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, broadcastIntent, 0);
+
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        long timeInterval =2 * 60 * 1000;
+
+        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), timeInterval, pi);
+        //am.
+
+        Toast.makeText(this, "Alarm set in " + timeInterval + " seconds",Toast.LENGTH_LONG).show();
+        _dbHelper = new DatabaseHelper(this.getApplicationContext());
+        System.out.println("Feedback : #004 Home Button Clicked");
+        Log.i("#004","Home Button Clicked");
+        Toast.makeText(this.getApplicationContext(),"Feedback : #004 Home Button Clicked",Toast.LENGTH_LONG).show();
+        _dbHelper.createLOG(new LogData("#004","false", DateUtils.getDateTime()));
+        _dbHelper.close();
     }
 
 }

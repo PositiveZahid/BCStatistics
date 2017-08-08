@@ -4,7 +4,7 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:paddingLeft="16dp"
 android:paddingRight="16dp" >
-<EditText
+<!--<EditText
     android:id="@+id/name"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -28,16 +28,13 @@ android:paddingRight="16dp" >
     android:layout_below="@id/times"
     android:layout_alignParentRight="true"
     android:text="string/done"
-    android:id="@+id/button" />
+    android:id="@+id/button" />-->
 <Button
     android:id="@+id/database"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Database"
-    android:layout_marginTop="132dp"
-    android:layout_below="@+id/button"
-    android:layout_alignStart="@+id/alarmStop" />
-<Button
+    android:text="Database" />
+<!--<Button
     android:id="@+id/alarmStart"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -52,5 +49,5 @@ android:paddingRight="16dp" >
     android:text="Alarm Stop"
     android:layout_marginTop="49dp"
     android:layout_below="@+id/alarmStart"
-    android:layout_alignStart="@+id/alarmStart" />
+    android:layout_alignStart="@+id/alarmStart" /-->>
 </RelativeLayout>
