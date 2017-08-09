@@ -20,28 +20,35 @@ public class ConnectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         dbh = new DatabaseHelper(getApplicationContext());
-        Toast.makeText(getApplicationContext(),"Connection Service Running ........!!! ",Toast.LENGTH_LONG).show();
-        System.out.print("Feedback : #003 Connection Service Started");
-        dbh.createLOG(new LogData("#003","false", DateUtils.getDateTime()));
-        dbh.close();
-        //connection = new Connection();
-        Handler connectionTest = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what != 1) { // code if not connected
-                    Log.i("Feedback : #002","Server/Internet Problem");
-                    dbh.createConnection(new Connection("false","false",DateUtils.getDateTime()));
-                    dbh.close();
-                } else { // code if connected
-                    Log.i("Feedback : #002","Internet Connected");
-                    new NetworkCall().execute();
-                    dbh.createConnection(new Connection("true","false",DateUtils.getDateTime()));
-                    dbh.close();
-                }
-            }
-        };
 
-        InternetConnection.isNetworkAvailable("http://www.google.com",connectionTest,2000);
+        try{
+            Handler connectionTest = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (msg.what != 1) { // code if not connected
+                        Log.i("#004","Server/Internet Problem");
+                        dbh.createConnection(new Connection("false"));
+                        dbh.close();
+                    } else { // code if connected
+                        Log.i("#004","Internet Connected");
+                        new NetworkCall(getApplicationContext()).execute();
+                    }
+                }
+            };
+
+            if(InternetConnection.checkWifiOn(getApplicationContext())){                                // wifi on
+                InternetConnection.isNetworkAvailable("http://www.google.com",connectionTest,2000);
+            }else{                                                                                      // wifi Off
+                dbh.createLOG(new LogData("#004"));
+                dbh.close();
+            }
+        }catch (Exception e){
+            dbh.createLOG(new LogData("#904"));
+            dbh.close();
+            Log.i("#904","Connection Checking Error!! "+e.getMessage());
+            Toast.makeText(getApplicationContext(),"Connection Checking problem occurred!! .. ",Toast.LENGTH_LONG).show();
+        }
+
 
         return Service.START_STICKY_COMPATIBILITY;
     }

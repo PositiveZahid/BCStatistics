@@ -1,6 +1,7 @@
 package iboxbd.broadband.statistics.model;
 
 import iboxbd.broadband.statistics.sqlite.DB_BASIC;
+import iboxbd.broadband.statistics.utils.DateUtils;
 
 public class Connection extends DB_BASIC
 {
@@ -12,10 +13,10 @@ public class Connection extends DB_BASIC
 
 	}
 
-	public Connection(String isConnected, String isSynced, String DateTime ){
-		this.isConnected = isConnected;
-		this.isSynced = isSynced;
-		this.DateTime = DateTime;
+	public Connection(String isConnected){
+		this.isConnected 	= isConnected;
+		this.isSynced   	= "false";
+		this.DateTime   	= DateUtils.getDateTime();
 	}
 
 	public String getIsConnected() {

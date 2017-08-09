@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import iboxbd.broadband.statistics.model.Connection;
+import iboxbd.broadband.statistics.model.IP;
 import iboxbd.broadband.statistics.model.LogData;
 
 import static iboxbd.broadband.statistics.utils.DateUtils.getDateTime;
@@ -27,11 +28,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "BCStatistics";
+    private static final String DATABASE_NAME = "BCStatistics.db";
 
     // Table Names
     private static final String TABLE_CONNECTION    = "CONNECTION";
     private static final String TABLE_LOG           = "LOG";
+    private static final String TABLE_IP            = "IP";
+
 
     // CONNECTION Table
     private static final String CONNECTION_ID = "ID";
@@ -40,10 +43,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CONNECTION_DATETIME = "DATETIME";
 
     // Log Table
-    private static final String LOG_ID = "ID";
-    private static final String LOG_LOG = "LOG";
-    private static final String LOG_ISSYNCED = "ISSYNCED";
-    private static final String LOG_DATETIME = "DATETIME";
+    private static final String LOG_ID          = "ID";
+    private static final String LOG_LOG         = "LOG";
+    private static final String LOG_ISSYNCED    = "ISSYNCED";
+    private static final String LOG_DATETIME    = "DATETIME";
+
+    private static final String IP_ID           = "ID";
+    private static final String IP_NO           = "LOG";
+    private static final String IP_NAME         = "NAME";
+    private static final String IP_ISSYNCED     = "ISSYNCED";
+    private static final String IP_DATETIME     = "DATETIME";
 
 
     // Table Create Statements
@@ -61,6 +70,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + LOG_ISSYNCED + " TEXT,"
             + LOG_DATETIME + " DATETIME" + ")";
 
+    private static final String CREATE_TABLE_IP = "CREATE TABLE "
+            + TABLE_IP + "(" + IP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + IP_NO + " TEXT,"
+            + IP_NAME + " TEXT,"
+            + IP_ISSYNCED + " TEXT,"
+            + IP_DATETIME + " DATETIME" + ")";
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -70,6 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // creating required tables
         db.execSQL(CREATE_TABLE_CONNECTION);
         db.execSQL(CREATE_TABLE_LOG);
+        db.execSQL(CREATE_TABLE_IP);
 
     }
 
@@ -78,6 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONNECTION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOG);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_IP);
         // create new tables
         onCreate(db);
     }
@@ -294,6 +313,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // insert row
         long log_id = db.insert(TABLE_LOG, null, values);
         return log_id;
+    }
+
+    // ------------------------ "IP" table methods ----------------//
+
+    /*       Creating IP      */
+    public long createIP(IP ip) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(IP_NO, ip.getIp());
+        values.put(IP_NAME, ip.getName());
+        values.put(IP_ISSYNCED, ip.getIsSynced());
+        values.put(IP_DATETIME, ip.getDateTime());
+
+        // insert row
+        long log_id = db.insert(TABLE_IP, null, values);
+        return log_id;
+    }
+
+    /*       Find IP Exist      */
+    public boolean doesIPExist(String ip) {
+        SQLiteDatabase db   = this.getReadableDatabase();
+        boolean ipExist     = false;
+        char ch             ='"';
+        String selectQuery  = "SELECT  * FROM " + TABLE_IP + " WHERE "+ IP_NO + " = " + ch+ip+ch;
+        Cursor c            = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            ipExist = true;
+
+        return ipExist;
     }
 }
 /**

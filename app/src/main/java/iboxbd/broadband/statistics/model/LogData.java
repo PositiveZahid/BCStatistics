@@ -16,10 +16,10 @@ public class LogData extends DB_BASIC {
 
     }
 
-    public LogData(String log,String isSynced, String DateTime){
-        this.log = log;
-        this.isSynced = isSynced;
-        this.DateTime = DateTime;
+    public LogData(String log){
+        this.log            = log;
+        this.isSynced   	= "false";
+        this.DateTime   	= DateUtils.getDateTime();
     }
 
     public String getLog() {
