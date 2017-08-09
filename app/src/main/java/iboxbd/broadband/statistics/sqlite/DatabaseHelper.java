@@ -49,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG_DATETIME    = "DATETIME";
 
     private static final String IP_ID           = "ID";
-    private static final String IP_NO           = "LOG";
+    private static final String IP_NO           = "NO";
     private static final String IP_NAME         = "NAME";
     private static final String IP_ISSYNCED     = "ISSYNCED";
     private static final String IP_DATETIME     = "DATETIME";
