@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BCStatistics.iml" filepath="$PROJECT_DIR$/BCStatistics.iml" />
       <module fileurl="file://$PROJECT_DIR$/Broadband.iml" filepath="$PROJECT_DIR$/Broadband.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

@@ -2,13 +2,13 @@ package iboxbd.broadband.statistics;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import iboxbd.broadband.statistics.ip.NetworkCall;
 import iboxbd.broadband.statistics.model.LogData;
 import iboxbd.broadband.statistics.phone.InternetConnection;
 import iboxbd.broadband.statistics.model.Connection;
