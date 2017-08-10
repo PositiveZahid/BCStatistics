@@ -18,14 +18,20 @@
             android:layout_height="wrap_content">
             <item
                 android:id="@+id/item1"
-                android:title="Refresh"
-                android:icon="@mipmap/icon"
+                android:title="Database"
+                android:icon="@mipmap/database"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <item
                 android:id="@+id/item2"
-                android:title="Refresh"
-                android:icon="@mipmap/icon"
+                android:title="Backup"
+                android:icon="@mipmap/backup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <item
+                android:id="@+id/item3"
+                android:title="Planner"
+                android:icon="@mipmap/plan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </menu>

@@ -27,7 +27,9 @@
         <activity
             android:name=".sqlite.SqliteManager"
             android:theme="@style/Theme.AppCompat.Light" />
-
+        <activity
+            android:name=".sqlite.SqliteStorage"
+            android:theme="@style/Theme.AppCompat.Light" />
         <receiver android:name=".BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

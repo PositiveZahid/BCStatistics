@@ -3,7 +3,6 @@ package iboxbd.broadband.statistics;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +15,10 @@ import android.widget.Toast;
 import com.facebook.stetho.Stetho;
 
 import java.io.IOException;
-
 import iboxbd.broadband.statistics.phone.ServiceCheck;
 import iboxbd.broadband.statistics.sqlite.SqliteManager;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
+import iboxbd.broadband.statistics.sqlite.SqliteStorage;
 
 import static iboxbd.broadband.statistics.sqlite.SqliteBackup.backupDatabase;
 
@@ -38,28 +37,17 @@ public class Home_Activity extends AppCompatActivity {
         GetDB();
 
         try {
-            /*String ip = "182.48.78.174";
-            String name = "Md. Zahidul Islam";
-            if(!_dbHelper.doesIPExist(ip)){
-                 _dbHelper.createIP(new IP(ip,name));
-               _dbHelper.close();
-                Toast.makeText(this,"Exist .....",Toast.LENGTH_LONG).show();
 
-            }else{
-                Toast.makeText(this,"Do not Exist .....",Toast.LENGTH_LONG).show();
-            }*/
-
-            Intent intentService = new Intent(this, ConnectionService.class);
-            startService(intentService);
-
-            Toast.makeText(this, Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID), Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID), Toast.LENGTH_LONG).show();
+            if (ServiceCheck.isMyServiceRunning(Home_Activity.this, ConnectionService.class)) {
+                Toast.makeText(this, "Connection Service Running ........!!! ", Toast.LENGTH_LONG).show();
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
-        if (ServiceCheck.isMyServiceRunning(Home_Activity.this, ConnectionService.class)) {
-            Toast.makeText(this, "Connection Service Running ........!!! ", Toast.LENGTH_LONG).show();
-        }
+
     }
 
     public DatabaseHelper GetDB() {
@@ -84,6 +72,7 @@ public class Home_Activity extends AppCompatActivity {
                 //Toast.makeText(this, "Menu item clicked", Toast.LENGTH_LONG).show();
                 Intent dbmanager = new Intent(Home_Activity.this, SqliteManager.class);
                 startActivity(dbmanager);
+                return true;
             case R.id.item2:
                 if (Build.VERSION.SDK_INT >= 23) {
                     if (checkPermission()) {
@@ -97,6 +86,11 @@ public class Home_Activity extends AppCompatActivity {
                         requestPermission(); // Code for permission
                     }
                 }
+                return true;
+            case R.id.item3:
+                Intent backupPlanner = new Intent(Home_Activity.this, SqliteStorage.class);
+                startActivity(backupPlanner);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

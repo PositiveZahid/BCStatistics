@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import iboxbd.broadband.statistics.ip.IPConverter;
 import iboxbd.broadband.statistics.model.Connection;
 import iboxbd.broadband.statistics.model.IP;
 import iboxbd.broadband.statistics.model.LogData;
@@ -322,7 +323,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(IP_NO, ip.getIp());
+        values.put(IP_NO, IPConverter.convert(ip.getIp()));
         values.put(IP_NAME, ip.getName());
         values.put(IP_ISSYNCED, ip.getIsSynced());
         values.put(IP_DATETIME, ip.getDateTime());
@@ -336,13 +337,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean doesIPExist(String ip) {
         SQLiteDatabase db   = this.getReadableDatabase();
         boolean ipExist     = false;
-        char ch             ='"';
-        String selectQuery  = "SELECT  * FROM " + TABLE_IP + " WHERE "+ IP_NO + " = " + ch+ip+ch;
+
+        String selectQuery  = "SELECT  * FROM " + TABLE_IP + " WHERE "+ IP_NO + " = "+IPConverter.convert(ip);
         Cursor c            = db.rawQuery(selectQuery, null);
 
-        if (c != null)
+        if (c != null && c.getCount()>0){
             ipExist = true;
-
+        }
         return ipExist;
     }
 }

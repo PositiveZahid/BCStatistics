@@ -57,11 +57,11 @@ public class NetworkCall extends AsyncTask<String, String, String> {
             String ip                = ipObject.getString("query");
             String name              = ipObject.getString("isp");
 
-            if(!dbh.doesIPExist(ip)){
+            if(dbh.doesIPExist(ip)){
+                Log.i("#905","IP already Exist inside local database");
+            }else{
                 dbh.createIP(new IP(ip,name));
                 dbh.close();
-            }else{
-                Log.i("#905","IP already Exist inside local database");
             }
 
             dbh.createConnection(new Connection("true"));
@@ -73,6 +73,7 @@ public class NetworkCall extends AsyncTask<String, String, String> {
         } catch (Exception e ){
             dbh.createLOG(new LogData("#905"));
             dbh.close();
+            e.printStackTrace();
             Log.i("#905","Network call data Error!! "+e.getMessage());
         }
 
