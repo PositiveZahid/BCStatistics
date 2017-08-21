@@ -38,10 +38,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     // CONNECTION Table
-    private static final String CONNECTION_ID = "ID";
-    private static final String CONNECTION_ISCONNECT = "ISCONNECT";
-    private static final String CONNECTION_ISSYNCED = "ISSYNCED";
-    private static final String CONNECTION_DATETIME = "DATETIME";
+    private static final String CONNECTION_ID           = "ID";
+    private static final String CONNECTION_IP_ID        = "IP_ID";
+    private static final String CONNECTION_ISCONNECT    = "ISCONNECT";
+    private static final String CONNECTION_ISSYNCED     = "ISSYNCED";
+    private static final String CONNECTION_DATETIME     = "DATETIME";
 
     // Log Table
     private static final String LOG_ID          = "ID";
@@ -51,6 +52,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String IP_ID           = "ID";
     private static final String IP_NO           = "NO";
+    private static final String IP_ADDRESS      = "ADDRESS";
     private static final String IP_NAME         = "NAME";
     private static final String IP_ISSYNCED     = "ISSYNCED";
     private static final String IP_DATETIME     = "DATETIME";
@@ -60,6 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // CONNECTION table create statement
     private static final String CREATE_TABLE_CONNECTION = "CREATE TABLE "
             + TABLE_CONNECTION + "(" + CONNECTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + CONNECTION_IP_ID + " TEXT,"
             + CONNECTION_ISCONNECT + " TEXT,"
             + CONNECTION_ISSYNCED + " TEXT,"
             + CONNECTION_DATETIME + " DATETIME" + " )";
@@ -74,6 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_IP = "CREATE TABLE "
             + TABLE_IP + "(" + IP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + IP_NO + " TEXT,"
+            + IP_ADDRESS + " TEXT,"
             + IP_NAME + " TEXT,"
             + IP_ISSYNCED + " TEXT,"
             + IP_DATETIME + " DATETIME" + ")";
@@ -110,6 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(CONNECTION_ISCONNECT, connection.getIsConnected());
+        values.put(CONNECTION_IP_ID, connection.getIp_id());
         values.put(CONNECTION_ISSYNCED, connection.getIsSynced());
         values.put(CONNECTION_DATETIME, getDateTime());
 
@@ -133,9 +138,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Connection connection = new Connection();
         connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+        connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
         connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
-        connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
-        connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
+        connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+        connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
         return connection;
     }
@@ -153,9 +159,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Connection connection = new Connection();
                 connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+                connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
                 connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
-                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
-                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
+                connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+                connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
                 // adding to CONNECTION list
                 connections.add(connection);
@@ -178,9 +185,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Connection connection = new Connection();
                 connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+                connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
                 connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
-                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
-                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
+                connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+                connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
                 // adding to CONNECTION list
                 connections.add(connection);
@@ -222,6 +230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(CONNECTION_IP_ID, connection.getIsSynced());
         values.put(CONNECTION_ISSYNCED, connection.getIsSynced());
         values.put(CONNECTION_ISCONNECT, connection.getIsConnected());
         values.put(CONNECTION_DATETIME, connection.getDateTime());
@@ -324,6 +333,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(IP_NO, IPConverter.convert(ip.getIp()));
+        values.put(IP_ADDRESS, ip.getAddress());
         values.put(IP_NAME, ip.getName());
         values.put(IP_ISSYNCED, ip.getIsSynced());
         values.put(IP_DATETIME, ip.getDateTime());
@@ -345,6 +355,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ipExist = true;
         }
         return ipExist;
+    }
+
+    public long getIPID(String ip) {
+        SQLiteDatabase db   = this.getReadableDatabase();
+        long log_id         = 0;
+
+        String selectQuery  = "SELECT  * FROM " + TABLE_IP + " WHERE "+ IP_NO + " = "+IPConverter.convert(ip);
+        Cursor c            = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.getCount()>0){
+            c.moveToFirst();
+            log_id = c.getLong(c.getColumnIndex(IP_ID));
+        }
+        return log_id;
     }
 }
 /**

@@ -56,19 +56,22 @@ public class NetworkCall extends AsyncTask<String, String, String> {
             JSONObject ipObject      = new JSONObject(result);
             String ip                = ipObject.getString("query");
             String name              = ipObject.getString("isp");
+            String ip_id             = null;
 
             if(dbh.doesIPExist(ip)){
+                ip_id = String.valueOf(dbh.getIPID(ip));
                 Log.i("#905","IP already Exist inside local database");
             }else{
-                dbh.createIP(new IP(ip,name));
+                ip_id = String.valueOf(dbh.createIP(new IP(ip,ip,name)));
                 dbh.close();
             }
 
-            dbh.createConnection(new Connection("true"));
+            dbh.createConnection(new Connection("true",ip_id));
             dbh.close();
         } catch (JSONException e) {
             dbh.createLOG(new LogData("#905"));
             dbh.close();
+            e.printStackTrace();
             Log.i("#905","Network call Error!! : JSONException "+e.getMessage());
         } catch (Exception e ){
             dbh.createLOG(new LogData("#905"));

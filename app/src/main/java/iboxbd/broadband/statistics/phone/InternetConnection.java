@@ -15,7 +15,6 @@ import java.net.URL;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-//import softoption.TeamTracker.Configuration.Configuration;
 
 /**
  * Created by ZahiD on 05-Apr-16.

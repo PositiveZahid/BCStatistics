@@ -8,17 +8,28 @@ public class Connection extends DB_BASIC
 	public String 	isConnected;
 	public String 	isSynced;
 	public String	DateTime;
+	public String  	ip_id;
 
-	public Connection(){
+
+
+    public Connection(){
 
 	}
 
-	public Connection(String isConnected){
+	public Connection(String isConnected, String ip_id){
 		this.isConnected 	= isConnected;
+        this.ip_id          = ip_id;
 		this.isSynced   	= "false";
 		this.DateTime   	= DateUtils.getDateTime();
 	}
 
+    public String getIp_id() {
+        return ip_id;
+    }
+
+    public void setIp_id(String ip_id) {
+        this.ip_id = ip_id;
+    }
 	public String getIsConnected() {
 		return isConnected;
 	}

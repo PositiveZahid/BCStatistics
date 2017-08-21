@@ -27,7 +27,7 @@ public class ConnectionService extends Service {
                 public void handleMessage(Message msg) {
                     if (msg.what != 1) { // code if not connected
                         Log.i("#004","Server/Internet Problem");
-                        dbh.createConnection(new Connection("false"));
+                        dbh.createConnection(new Connection("false","-"));
                         dbh.close();
                     } else { // code if connected
                         Log.i("#004","Internet Connected");

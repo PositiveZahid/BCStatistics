@@ -3,6 +3,7 @@ package iboxbd.broadband.statistics;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,34 +15,66 @@ import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import iboxbd.broadband.statistics.model.Connection;
 import iboxbd.broadband.statistics.phone.ServiceCheck;
+import iboxbd.broadband.statistics.phone.Storage;
+import iboxbd.broadband.statistics.sqlite.ExternalDatabase;
 import iboxbd.broadband.statistics.sqlite.SqliteManager;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.sqlite.SqliteStorage;
 
 import static iboxbd.broadband.statistics.sqlite.SqliteBackup.backupDatabase;
 
-
 public class Home_Activity extends AppCompatActivity {
 
     private DatabaseHelper _dbHelper;
     private static final int PERMISSION_REQUEST_CODE = 1;
+    private ExternalDatabase readExternalDatabase;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Stetho.initializeWithDefaults(this);
+        readExternalDatabase = new ExternalDatabase(this);
         setContentView(R.layout.activity_home);
         GetDB();
 
         try {
-
+            //new NetworkCall(getApplicationContext()).execute();
+            //new SpeedCall(Home_Activity.this).execute();
             //Toast.makeText(this, Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID), Toast.LENGTH_LONG).show();
+            File file = Storage.getStorageDir("broadband.db3");
+            if(file.exists()){
+                Toast.makeText(this, "Yes .......... ", Toast.LENGTH_LONG).show();
+                System.out.println("Yes "+file);
+            }else{
+                Toast.makeText(this, "NO .......... ", Toast.LENGTH_LONG).show();
+                System.out.println("NO "+file);
+            }
+
+            List<Connection> connections = new ArrayList<Connection>();
+            connections = readExternalDatabase.getAllConnections();
+
+            for (Connection connection: connections) {
+                //connection.getIsConnected();
+                //connection.getDateTime();
+                //connection.setIp_id("1");
+                //_dbHelper.createConnection(connection);
+                Log.i(connection.getDateTime(),connection.getIsConnected());
+            }
+
+
             if (ServiceCheck.isMyServiceRunning(Home_Activity.this, ConnectionService.class)) {
                 Toast.makeText(this, "Connection Service Running ........!!! ", Toast.LENGTH_LONG).show();
             }
+            //String androidId = ;
+            //Toast.makeText(this, Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID), Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -60,6 +93,7 @@ public class Home_Activity extends AppCompatActivity {
     private void InitDB() {
         //Initialize DB handler
         _dbHelper = new DatabaseHelper(this);
+
         //Adding table based on class TEST reflection
         //_dbHelper.CreateTable(new Connection());
     }

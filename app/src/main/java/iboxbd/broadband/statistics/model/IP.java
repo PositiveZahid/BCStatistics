@@ -8,6 +8,7 @@ import iboxbd.broadband.statistics.utils.DateUtils;
 
 public class IP {
     public String   ip;
+    public String   address;
     public String   name;
     public String 	isSynced;
     public String	DateTime;
@@ -15,8 +16,9 @@ public class IP {
     public IP(){
     }
 
-    public IP(String ip, String name){
+    public IP(String ip, String address, String name){
         this.ip         = ip;
+        this.address    = address;
         this.name       = name;
         this.isSynced   = "false";
         this.DateTime   = DateUtils.getDateTime();
@@ -28,6 +30,14 @@ public class IP {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getName() {
