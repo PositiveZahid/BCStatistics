@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import iboxbd.broadband.statistics.ip.NetworkCall;
 import iboxbd.broadband.statistics.model.LogData;
-import iboxbd.broadband.statistics.phone.InternetConnection;
+import iboxbd.broadband.statistics.phone.Connectivity;
 import iboxbd.broadband.statistics.model.Connection;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.utils.DateUtils;
@@ -36,8 +36,8 @@ public class ConnectionService extends Service {
                 }
             };
 
-            if(InternetConnection.checkWifiOn(getApplicationContext())){                                // wifi on
-                InternetConnection.isNetworkAvailable("http://www.google.com",connectionTest,2000);
+            if(Connectivity.checkWifiOn(getApplicationContext())){                                // wifi on
+                Connectivity.isNetworkAvailable("http://www.google.com",connectionTest,2000);
             }else{                                                                                      // wifi Off
                 dbh.createLOG(new LogData("#004"));
                 dbh.close();

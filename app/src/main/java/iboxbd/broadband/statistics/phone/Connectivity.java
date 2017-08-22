@@ -19,7 +19,7 @@ import okhttp3.Response;
 /**
  * Created by ZahiD on 05-Apr-16.
  */
-public class InternetConnection {
+public class Connectivity {
     public static boolean isConnect = false;
     public static NetworkInfo activeNetwork;
     public static ConnectivityManager connection;
@@ -133,5 +133,13 @@ public class InternetConnection {
         } else {
             return false; // Wi-Fi adapter is OFF
         }
+    }
+
+    public static boolean isRegisteredWithWifi(Context context){
+        boolean isWifi = false;
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo current = connManager.getActiveNetworkInfo();
+        isWifi = current != null && current.getType() == ConnectivityManager.TYPE_WIFI;
+        return isWifi;
     }
 }

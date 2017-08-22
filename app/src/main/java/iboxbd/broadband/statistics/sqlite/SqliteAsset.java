@@ -18,10 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
-/**
- * Created by User on 8/21/2017.
- */
-
 
 /*
  * Copyright (C) 2011 readyState Software Ltd, 2007 The Android Open Source Project

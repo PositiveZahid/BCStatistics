@@ -2,28 +2,27 @@ package iboxbd.broadband.statistics;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-import iboxbd.broadband.statistics.model.Connection;
-import iboxbd.broadband.statistics.phone.ServiceCheck;
-import iboxbd.broadband.statistics.phone.Storage;
-import iboxbd.broadband.statistics.sqlite.ExternalDatabase;
 import iboxbd.broadband.statistics.sqlite.SqliteManager;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.sqlite.SqliteStorage;
@@ -34,53 +33,20 @@ public class Home_Activity extends AppCompatActivity {
 
     private DatabaseHelper _dbHelper;
     private static final int PERMISSION_REQUEST_CODE = 1;
-    private ExternalDatabase readExternalDatabase;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Stetho.initializeWithDefaults(this);
-        readExternalDatabase = new ExternalDatabase(this);
         setContentView(R.layout.activity_home);
         GetDB();
 
         try {
-            //new NetworkCall(getApplicationContext()).execute();
-            //new SpeedCall(Home_Activity.this).execute();
-            //Toast.makeText(this, Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID), Toast.LENGTH_LONG).show();
-            File file = Storage.getStorageDir("broadband.db3");
-            if(file.exists()){
-                Toast.makeText(this, "Yes .......... ", Toast.LENGTH_LONG).show();
-                System.out.println("Yes "+file);
-            }else{
-                Toast.makeText(this, "NO .......... ", Toast.LENGTH_LONG).show();
-                System.out.println("NO "+file);
-            }
-
-            List<Connection> connections = new ArrayList<Connection>();
-            connections = readExternalDatabase.getAllConnections();
-
-            for (Connection connection: connections) {
-                //connection.getIsConnected();
-                //connection.getDateTime();
-                //connection.setIp_id("1");
-                //_dbHelper.createConnection(connection);
-                Log.i(connection.getDateTime(),connection.getIsConnected());
-            }
-
-
-            if (ServiceCheck.isMyServiceRunning(Home_Activity.this, ConnectionService.class)) {
-                Toast.makeText(this, "Connection Service Running ........!!! ", Toast.LENGTH_LONG).show();
-            }
-            //String androidId = ;
-            //Toast.makeText(this, Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID), Toast.LENGTH_LONG).show();
+            table();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
-
-
     }
 
     public DatabaseHelper GetDB() {
@@ -97,7 +63,6 @@ public class Home_Activity extends AppCompatActivity {
         //Adding table based on class TEST reflection
         //_dbHelper.CreateTable(new Connection());
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -168,5 +133,76 @@ public class Home_Activity extends AppCompatActivity {
         }
     }
 
+    public void table() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), 1);
+        int month = calendar.get(Calendar.MONTH);
 
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        int i = 0;
+
+
+        TableLayout stk = (TableLayout) findViewById(R.id.table_main);
+        TableRow tbrow0 = new TableRow(this);
+        TextView tv0 = new TextView(this);
+        tv0.setText(" Sl.No ");
+        tv0.setTextColor(Color.WHITE);
+        tbrow0.addView(tv0);
+        TextView tv1 = new TextView(this);
+        tv1.setText(" Date ");
+        tv1.setTextColor(Color.WHITE);
+        tbrow0.addView(tv1);
+        TextView tv2 = new TextView(this);
+        tv2.setText(" Connected ");
+        tv2.setTextColor(Color.WHITE);
+        tbrow0.addView(tv2);
+        TextView tv3 = new TextView(this);
+        tv3.setText(" Disconnected ");
+        tv3.setTextColor(Color.WHITE);
+        tbrow0.addView(tv3);
+        stk.addView(tbrow0);
+
+        while (calendar.get(Calendar.MONTH) == month) {
+
+            SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat countingFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            String TRUE     = "SELECT COUNT(*) as count FROM connection WHERE isconnect = 'true' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
+            String FALSE    = "SELECT COUNT(*) as count FROM connection WHERE isconnect = 'false' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
+
+            int countTrue   = _dbHelper.customInteger(TRUE,"count");
+            int countFalse  = _dbHelper.customInteger(FALSE,"count");
+
+
+            TableRow tbrow = new TableRow(this);
+            TextView t1v = new TextView(this);
+            t1v.setText("" + i);
+            t1v.setTextColor(Color.WHITE);
+            t1v.setGravity(Gravity.CENTER);
+            tbrow.addView(t1v);
+            TextView t2v = new TextView(this);
+            t2v.setText(format1.format(calendar.getTime()));
+            t2v.setTextColor(Color.WHITE);
+            t2v.setGravity(Gravity.CENTER);
+            tbrow.addView(t2v);
+            TextView t3v = new TextView(this);
+            t3v.setText("" + countTrue);
+            t3v.setTextColor(Color.WHITE);
+            t3v.setGravity(Gravity.CENTER);
+            tbrow.addView(t3v);
+            TextView t4v = new TextView(this);
+            t4v.setText("" + countFalse);
+            t4v.setTextColor(Color.WHITE);
+            t4v.setGravity(Gravity.CENTER);
+            tbrow.addView(t4v);
+            stk.addView(tbrow);
+            calendar.add(Calendar.DATE, 1);
+            i++;
+        }
+    }
 }

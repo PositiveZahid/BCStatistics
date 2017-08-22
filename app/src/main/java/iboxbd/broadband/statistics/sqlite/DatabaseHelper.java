@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.MatrixCursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,9 +17,6 @@ import iboxbd.broadband.statistics.ip.IPConverter;
 import iboxbd.broadband.statistics.model.Connection;
 import iboxbd.broadband.statistics.model.IP;
 import iboxbd.broadband.statistics.model.LogData;
-
-import static iboxbd.broadband.statistics.utils.DateUtils.getDateTime;
-
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -35,7 +33,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_CONNECTION    = "CONNECTION";
     private static final String TABLE_LOG           = "LOG";
     private static final String TABLE_IP            = "IP";
-
 
     // CONNECTION Table
     private static final String CONNECTION_ID           = "ID";
@@ -82,7 +79,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + IP_ISSYNCED + " TEXT,"
             + IP_DATETIME + " DATETIME" + ")";
 
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -93,7 +89,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CONNECTION);
         db.execSQL(CREATE_TABLE_LOG);
         db.execSQL(CREATE_TABLE_IP);
-
     }
 
     @Override
@@ -116,7 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(CONNECTION_ISCONNECT, connection.getIsConnected());
         values.put(CONNECTION_IP_ID, connection.getIp_id());
         values.put(CONNECTION_ISSYNCED, connection.getIsSynced());
-        values.put(CONNECTION_DATETIME, getDateTime());
+        values.put(CONNECTION_DATETIME, connection.getDateTime());
 
         // insert row
 
@@ -144,6 +139,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
         return connection;
+    }
+
+    public List<Connection> customConnection(String custom){
+        System.out.println("Yes .........."+custom);
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Connection> connections = new ArrayList<Connection>();
+
+        Cursor c = db.rawQuery(custom, null);
+            if (c.moveToFirst()) {
+                do {
+                    Log.d("debug","getting the name from cursor"+ DatabaseUtils.dumpCurrentRowToString(c));
+                    //Connection connection = new Connection();
+//                    connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+//                    connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
+//                    connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+//                    connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
+
+                    // adding to CONNECTION list
+                    //connections.add(connection);
+                } while (c.moveToNext());
+            }
+        return connections;
+    }
+
+    public int customInteger(String custom, String column){
+        SQLiteDatabase db = this.getReadableDatabase();
+        int a = 0;
+
+        Cursor c = db.rawQuery(custom, null);
+        if (c.moveToFirst()) {
+            a = c.getInt(c.getColumnIndex(column));
+        }
+        return a;
     }
 
     /*      getting all CONNECTIONs      */
@@ -370,6 +398,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return log_id;
     }
+
 }
 /**
  * getting all logs

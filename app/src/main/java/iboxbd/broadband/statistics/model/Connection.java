@@ -23,6 +23,12 @@ public class Connection extends DB_BASIC
 		this.DateTime   	= DateUtils.getDateTime();
 	}
 
+	public Connection(String isConnected, String ip_id, String dateTime){
+		this.isConnected 	= isConnected;
+		this.ip_id          = ip_id;
+		this.isSynced   	= "false";
+		this.DateTime   	= dateTime;
+	}
     public String getIp_id() {
         return ip_id;
     }

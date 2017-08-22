@@ -1,53 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:paddingLeft="16dp"
-android:paddingRight="16dp" >
-<!--<EditText
-    android:id="@+id/name"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="string/reminder" />
-<Spinner
-    android:id="@+id/dates"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/name"
-    android:layout_alignParentLeft="true"
-    android:layout_toLeftOf="@+id/times" />
-<Spinner
-    android:id="@id/times"
-    android:layout_width="96dp"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/name"
-    android:layout_alignParentRight="true" />
-<Button
-    android:layout_width="96dp"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/times"
-    android:layout_alignParentRight="true"
-    android:text="string/done"
-    android:id="@+id/button" />
-<Button
-    android:id="@+id/database"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Database" />
-<Button
-    android:id="@+id/alarmStart"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Alarm Start"
-    android:layout_above="@+id/database"
-    android:layout_alignParentStart="true"
-    android:layout_marginStart="20dp" />
-<Button
-    android:id="@+id/alarmStop"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Alarm Stop"
-    android:layout_marginTop="49dp"
-    android:layout_below="@+id/alarmStart"
-    android:layout_alignStart="@+id/alarmStart" /-->
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+    <!--<EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="string/reminder" />
+    <Spinner
+        android:id="@+id/dates"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/times" />
+    <Spinner
+        android:id="@id/times"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_alignParentRight="true" />
+    <Button
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/times"
+        android:layout_alignParentRight="true"
+        android:text="string/done"
+        android:id="@+id/button" />
+    <Button
+        android:id="@+id/database"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Database" />
+    <Button
+        android:id="@+id/alarmStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alarm Start"
+        android:layout_above="@+id/database"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20dp" />
+    <Button
+        android:id="@+id/alarmStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alarm Stop"
+        android:layout_marginTop="49dp"
+        android:layout_below="@+id/alarmStart"
+        android:layout_alignStart="@+id/alarmStart" /-->
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#3d455b"
+        android:layout_alignParentLeft="true"
+        tools:ignore="RtlHardcoded,UselessParent">
+
+        <HorizontalScrollView
+            android:id="@+id/hscrll1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <RelativeLayout
+                android:id="@+id/RelativeLayout1"
+                android:layout_width="fill_parent"
+                android:layout_gravity="center"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                tools:ignore="ScrollViewSize">
+
+                <TableLayout
+                    android:id="@+id/table_main"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true" >
+                </TableLayout>
+            </RelativeLayout>
+        </HorizontalScrollView>
+    </ScrollView>
 </RelativeLayout>
