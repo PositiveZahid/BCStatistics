@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import iboxbd.broadband.statistics.ip.Speed;
 import iboxbd.broadband.statistics.sqlite.SqliteManager;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.sqlite.SqliteStorage;
@@ -40,6 +41,7 @@ public class Home_Activity extends AppCompatActivity {
         Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_home);
         GetDB();
+        new Speed(Home_Activity.this).execute();
 
         try {
             table();
