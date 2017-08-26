@@ -17,6 +17,7 @@ import iboxbd.broadband.statistics.ip.IPConverter;
 import iboxbd.broadband.statistics.model.Connection;
 import iboxbd.broadband.statistics.model.IP;
 import iboxbd.broadband.statistics.model.LogData;
+import iboxbd.broadband.statistics.model.Wifi;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -33,13 +34,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_CONNECTION    = "CONNECTION";
     private static final String TABLE_LOG           = "LOG";
     private static final String TABLE_IP            = "IP";
+    private static final String TABLE_WIFI          = "WIFI";
 
     // CONNECTION Table
-    private static final String CONNECTION_ID           = "ID";
-    private static final String CONNECTION_IP_ID        = "IP_ID";
-    private static final String CONNECTION_ISCONNECT    = "ISCONNECT";
-    private static final String CONNECTION_ISSYNCED     = "ISSYNCED";
-    private static final String CONNECTION_DATETIME     = "DATETIME";
+    private static final String CONNECTION_ID                   = "ID";
+    private static final String CONNECTION_IP_ID                = "IP_ID";
+    private static final String CONNECTION_ISWIFION             = "ISWIFION";
+    private static final String CONNECTION_ISCONNECTTOWIFI      = "ISCONNECTTOWIFI";
+    private static final String CONNECTION_WIFIID               = "WIFIID";
+    private static final String CONNECTION_ISCONNECTTOINTERNET  = "ISCONNECTTOINTERNET";
+    private static final String CONNECTION_ISSYNCED             = "ISSYNCED";
+    private static final String CONNECTION_DATETIME             = "DATETIME";
 
     // Log Table
     private static final String LOG_ID          = "ID";
@@ -54,13 +59,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String IP_ISSYNCED     = "ISSYNCED";
     private static final String IP_DATETIME     = "DATETIME";
 
+    private static final String WIFI_ID         = "ID";
+    private static final String WIFI_NAME       = "NAME";
+    private static final String WIFI_ISSYNCED   = "ISSYNCED";
+    private static final String WIFI_DATETIME   = "DATETIME";
+
 
     // Table Create Statements
     // CONNECTION table create statement
     private static final String CREATE_TABLE_CONNECTION = "CREATE TABLE "
             + TABLE_CONNECTION + "(" + CONNECTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + CONNECTION_IP_ID + " TEXT,"
-            + CONNECTION_ISCONNECT + " TEXT,"
+            + CONNECTION_ISWIFION + " TEXT,"
+            + CONNECTION_ISCONNECTTOWIFI + " TEXT,"
+            + CONNECTION_WIFIID + " TEXT,"
+            + CONNECTION_ISCONNECTTOINTERNET + " TEXT,"
             + CONNECTION_ISSYNCED + " TEXT,"
             + CONNECTION_DATETIME + " DATETIME" + " )";
 
@@ -79,6 +92,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + IP_ISSYNCED + " TEXT,"
             + IP_DATETIME + " DATETIME" + ")";
 
+    private static final String CREATE_TABLE_WIFI = "CREATE TABLE "
+            + TABLE_WIFI + "(" + WIFI_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + WIFI_NAME + " TEXT,"
+            + WIFI_ISSYNCED + " TEXT,"
+            + WIFI_DATETIME + " DATETIME" + ")";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -89,6 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CONNECTION);
         db.execSQL(CREATE_TABLE_LOG);
         db.execSQL(CREATE_TABLE_IP);
+        db.execSQL(CREATE_TABLE_WIFI);
     }
 
     @Override
@@ -97,6 +117,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONNECTION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOG);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_IP);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIFI);
         // create new tables
         onCreate(db);
     }
@@ -108,7 +129,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(CONNECTION_ISCONNECT, connection.getIsConnected());
+
+        values.put(CONNECTION_ISWIFION, connection.getIsWifiOn());
+        values.put(CONNECTION_ISCONNECTTOWIFI, connection.getIsConnectToWifi());
+        values.put(CONNECTION_WIFIID, connection.getWifiId());
+        values.put(CONNECTION_ISCONNECTTOINTERNET, connection.getIsConnectToInternet());
         values.put(CONNECTION_IP_ID, connection.getIp_id());
         values.put(CONNECTION_ISSYNCED, connection.getIsSynced());
         values.put(CONNECTION_DATETIME, connection.getDateTime());
@@ -133,8 +158,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Connection connection = new Connection();
         connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+        connection.setIsWifiOn(c.getString(c.getColumnIndex(CONNECTION_ISWIFION)));
+        connection.setIsConnectToWifi(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOWIFI)));
+        connection.setWifiId(c.getString(c.getColumnIndex(CONNECTION_WIFIID)));
+        connection.setIsConnectToInternet(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOINTERNET)));
         connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
-        connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
         connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
         connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
@@ -187,8 +215,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Connection connection = new Connection();
                 connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+                connection.setIsWifiOn(c.getString(c.getColumnIndex(CONNECTION_ISWIFION)));
+                connection.setIsConnectToWifi(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOWIFI)));
+                connection.setWifiId(c.getString(c.getColumnIndex(CONNECTION_WIFIID)));
+                connection.setIsConnectToInternet(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOINTERNET)));
                 connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
-                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
                 connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
                 connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
@@ -213,8 +244,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Connection connection = new Connection();
                 connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+                connection.setIsWifiOn(c.getString(c.getColumnIndex(CONNECTION_ISWIFION)));
+                connection.setIsConnectToWifi(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOWIFI)));
+                connection.setWifiId(c.getString(c.getColumnIndex(CONNECTION_WIFIID)));
+                connection.setIsConnectToInternet(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOINTERNET)));
                 connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
-                connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
                 connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
                 connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
@@ -258,9 +292,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(CONNECTION_IP_ID, connection.getIsSynced());
+        values.put(CONNECTION_ISWIFION, connection.getIsWifiOn());
+        values.put(CONNECTION_ISCONNECTTOWIFI, connection.getIsConnectToWifi());
+        values.put(CONNECTION_WIFIID, connection.getWifiId());
+        values.put(CONNECTION_ISCONNECTTOINTERNET, connection.getIsConnectToInternet());
+        values.put(CONNECTION_IP_ID, connection.getIp_id());
         values.put(CONNECTION_ISSYNCED, connection.getIsSynced());
-        values.put(CONNECTION_ISCONNECT, connection.getIsConnected());
         values.put(CONNECTION_DATETIME, connection.getDateTime());
 
         // updating row
@@ -273,7 +310,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(CONNECTION_ISCONNECT, status);
+        values.put(CONNECTION_ISCONNECTTOINTERNET, status);
 
         // updating row
         return db.update(TABLE_CONNECTION, values, CONNECTION_ID + " = ?",
@@ -399,6 +436,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return log_id;
     }
 
+    public boolean doesWifiExist(String wifiName) {
+        SQLiteDatabase db   = this.getReadableDatabase();
+        boolean ipExist     = false;
+
+        String selectQuery  = "SELECT  * FROM " + TABLE_WIFI + " WHERE "+ WIFI_NAME + " = '"+wifiName+"'";
+        Log.i("Wifi Query",selectQuery);
+        Cursor c            = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.getCount()>0){
+            ipExist = true;
+        }
+        return ipExist;
+    }
+
+    public long getWIFIID(String wifiName) {
+        SQLiteDatabase db   = this.getReadableDatabase();
+        long log_id         = 0;
+
+        String selectQuery  = "SELECT  * FROM " + TABLE_WIFI + " WHERE "+ WIFI_NAME + " = "+wifiName;
+        Cursor c            = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.getCount()>0){
+            c.moveToFirst();
+            log_id = c.getLong(c.getColumnIndex(WIFI_ID));
+        }
+        return log_id;
+    }
+
+    public long createWIFI(Wifi wifi) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(WIFI_NAME,       wifi.getWIFI_NAME());
+        values.put(WIFI_ISSYNCED,   wifi.getWIFI_ISSYNCED());
+        values.put(WIFI_DATETIME,   wifi.getWIFI_DATETIME());
+
+        // insert row
+        long log_id = db.insert(TABLE_WIFI, null, values);
+        return log_id;
+    }
 }
 /**
  * getting all logs

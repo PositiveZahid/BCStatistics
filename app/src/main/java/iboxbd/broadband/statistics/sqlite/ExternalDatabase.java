@@ -45,6 +45,19 @@ public class ExternalDatabase extends SQLiteOpenHelper {
         this.context = context;
     }
 
+
+    /*List<Connection> connections = externalDatabase.getAllConnections();
+
+    for(Connection connection:connections){
+        if(connection.getIsConnectToInternet().equals("true")){
+            _dbHelper.createConnection(new Connection("true","true","1",connection.getIsConnectToInternet(),connection.getIp_id(),connection.getDateTime()));
+        }else{
+            _dbHelper.createConnection(new Connection("false","false","-",connection.getIsConnectToInternet(),"-",connection.getDateTime()));
+        }
+        //Log.i("connection.getDateTime()",connection.getDateTime());
+    }*/
+
+
     public List<Connection> getAllConnections() {
         List<Connection> connections = new ArrayList<Connection>();
         String selectQuery = "SELECT  * FROM " + TABLE_CONNECTION;
@@ -62,8 +75,8 @@ public class ExternalDatabase extends SQLiteOpenHelper {
                 do {
                     Connection connection = new Connection();
                     connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
-                    //connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
-                    connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
+                    connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
+                    connection.setIsConnectToInternet(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
                     connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
                     connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 

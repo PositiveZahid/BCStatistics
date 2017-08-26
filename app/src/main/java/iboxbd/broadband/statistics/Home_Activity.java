@@ -22,8 +22,13 @@ import com.facebook.stetho.Stetho;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
+import iboxbd.broadband.statistics.ip.NetworkCall;
 import iboxbd.broadband.statistics.ip.Speed;
+import iboxbd.broadband.statistics.model.Connection;
+import iboxbd.broadband.statistics.phone.Connectivity;
+import iboxbd.broadband.statistics.sqlite.ExternalDatabase;
 import iboxbd.broadband.statistics.sqlite.SqliteManager;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.sqlite.SqliteStorage;
@@ -34,17 +39,26 @@ public class Home_Activity extends AppCompatActivity {
 
     private DatabaseHelper _dbHelper;
     private static final int PERMISSION_REQUEST_CODE = 1;
+    private ExternalDatabase externalDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Stetho.initializeWithDefaults(this);
+        externalDatabase = new ExternalDatabase(this);
         setContentView(R.layout.activity_home);
         GetDB();
-        new Speed(Home_Activity.this).execute();
+        //new Speed(Home_Activity.this).execute();
+        //new NetworkCall(getApplicationContext()).execute();
+        //_dbHelper.doesWifiExist(Connectivity.wifiName(this));
+        Log.i("Wifi Name", _dbHelper.doesWifiExist(Connectivity.wifiName(this))+"");
+
 
         try {
             table();
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -146,7 +160,7 @@ public class Home_Activity extends AppCompatActivity {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        int i = 0;
+        int i = 1;
 
 
         TableLayout stk = (TableLayout) findViewById(R.id.table_main);
@@ -154,7 +168,7 @@ public class Home_Activity extends AppCompatActivity {
         TextView tv0 = new TextView(this);
         tv0.setText(" Sl.No ");
         tv0.setTextColor(Color.WHITE);
-        tbrow0.addView(tv0);
+        //tbrow0.addView(tv0);
         TextView tv1 = new TextView(this);
         tv1.setText(" Date ");
         tv1.setTextColor(Color.WHITE);
@@ -174,8 +188,8 @@ public class Home_Activity extends AppCompatActivity {
             SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy");
             SimpleDateFormat countingFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            String TRUE     = "SELECT COUNT(*) as count FROM connection WHERE isconnect = 'true' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
-            String FALSE    = "SELECT COUNT(*) as count FROM connection WHERE isconnect = 'false' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
+            String TRUE     = "SELECT COUNT(*) as count FROM connection WHERE ISCONNECTTOINTERNET = 'true' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
+            String FALSE    = "SELECT COUNT(*) as count FROM connection WHERE ISCONNECTTOINTERNET = 'false' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
 
             int countTrue   = _dbHelper.customInteger(TRUE,"count");
             int countFalse  = _dbHelper.customInteger(FALSE,"count");
@@ -186,7 +200,7 @@ public class Home_Activity extends AppCompatActivity {
             t1v.setText("" + i);
             t1v.setTextColor(Color.WHITE);
             t1v.setGravity(Gravity.CENTER);
-            tbrow.addView(t1v);
+            //tbrow.addView(t1v);
             TextView t2v = new TextView(this);
             t2v.setText(format1.format(calendar.getTime()));
             t2v.setTextColor(Color.WHITE);

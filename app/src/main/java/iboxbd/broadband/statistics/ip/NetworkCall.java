@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import iboxbd.broadband.statistics.model.Connection;
 import iboxbd.broadband.statistics.model.IP;
 import iboxbd.broadband.statistics.model.LogData;
+import iboxbd.broadband.statistics.model.Wifi;
+import iboxbd.broadband.statistics.phone.Connectivity;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 
 /**
@@ -56,17 +58,29 @@ public class NetworkCall extends AsyncTask<String, String, String> {
             JSONObject ipObject      = new JSONObject(result);
             String ip                = ipObject.getString("query");
             String name              = ipObject.getString("isp");
-            String ip_id             = null;
+            String ip_id             = "";
+            String wifiName          = Connectivity.wifiName(context);
+            String wifiId               = "";
+
+            if(dbh.doesWifiExist(wifiName)){
+                wifiId = String.valueOf(dbh.getWIFIID(wifiName));
+                dbh.close();
+                Log.i("#905","IP already Exist inside local database");
+            }else{
+                wifiId = String.valueOf(dbh.createWIFI(new Wifi(wifiName)));
+                dbh.close();
+            }
 
             if(dbh.doesIPExist(ip)){
                 ip_id = String.valueOf(dbh.getIPID(ip));
+                dbh.close();
                 Log.i("#905","IP already Exist inside local database");
             }else{
                 ip_id = String.valueOf(dbh.createIP(new IP(ip,ip,name)));
                 dbh.close();
             }
 
-            dbh.createConnection(new Connection("true",ip_id));
+            dbh.createConnection(new Connection("true","true",wifiId,"true",ip_id));
             dbh.close();
         } catch (JSONException e) {
             dbh.createLOG(new LogData("#905"));

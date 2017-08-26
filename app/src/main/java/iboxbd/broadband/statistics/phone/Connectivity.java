@@ -70,7 +70,7 @@ public class Connectivity {
         return isConnect;
     }
 
-    public static void isNetworkAvailable(final String url, final Handler handler, final int timeout) {
+    public static void isInternetAvailable(final String url, final Handler handler, final int timeout) {
         // ask fo message '0' (not connected) or '1' (connected) on 'handler'
         // the answer must be send before before within the 'timeout' (in milliseconds)
 
@@ -141,5 +141,12 @@ public class Connectivity {
         NetworkInfo current = connManager.getActiveNetworkInfo();
         isWifi = current != null && current.getType() == ConnectivityManager.TYPE_WIFI;
         return isWifi;
+    }
+
+    public static String wifiName(Context context){
+        WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+        //myString = wifiInfo.getSSID().substring(1, wifiInfo.getSSID().length()-1);
+        return wifiInfo.getSSID().substring(1, wifiInfo.getSSID().length()-1);
     }
 }

@@ -17,31 +17,43 @@ import iboxbd.broadband.statistics.utils.DateUtils;
 
 public class ConnectionService extends Service {
     DatabaseHelper dbh;
+    String wifiName;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         dbh = new DatabaseHelper(getApplicationContext());
+        wifiName ="";
 
         try{
-            Handler connectionTest = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (msg.what != 1) { // code if not connected
-                        Log.i("#004","Server/Internet Problem");
-                        dbh.createConnection(new Connection("false","-"));
-                        dbh.close();
-                    } else { // code if connected
-                        Log.i("#004","Internet Connected");
-                        new NetworkCall(getApplicationContext()).execute();
-                    }
-                }
-            };
 
-            if(Connectivity.checkWifiOn(getApplicationContext())){                                // wifi on
-                Connectivity.isNetworkAvailable("http://www.google.com",connectionTest,2000);
-            }else{                                                                                      // wifi Off
-                dbh.createLOG(new LogData("#004"));
+            if(Connectivity.checkWifiOn(getApplicationContext())){                                  // Checking Wifi
+                if(Connectivity.isRegisteredWithWifi(getApplicationContext())){                     // Check Registered With Wifi
+                    wifiName    = Connectivity.wifiName(getApplicationContext());
+                    Connectivity.isInternetAvailable("http://www.google.com",new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            if (msg.what != 1) { // code if not connected
+                                Log.i("#004","Server/Internet Problem");
+                                //dbh.createConnection(new Connection("false","-"));
+                                dbh.createConnection(new Connection("true","true",wifiName,"false","-"));
+                                dbh.close();
+                            } else { // code if connected
+                                Log.i("#004","Internet Connected");
+                                new NetworkCall(getApplicationContext()).execute();
+                            }
+                        }
+                    },2000);
+                }else{
+                    Log.i("#004","Wifi enabled but not connected to a network");
+                    //dbh.createConnection(new Connection("false","-"));
+                    dbh.createConnection(new Connection("true","false","-","false","-"));
+                    dbh.close();
+                }
+            }else{
+                Log.i("#004","Wifi disabled");
+                dbh.createConnection(new Connection("false","false","-","false","-"));
                 dbh.close();
             }
+
         }catch (Exception e){
             dbh.createLOG(new LogData("#904"));
             dbh.close();
