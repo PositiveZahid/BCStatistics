@@ -51,7 +51,7 @@ public class Home_Activity extends AppCompatActivity {
         //new Speed(Home_Activity.this).execute();
         //new NetworkCall(getApplicationContext()).execute();
         //_dbHelper.doesWifiExist(Connectivity.wifiName(this));
-        Log.i("Wifi Name", _dbHelper.doesWifiExist(Connectivity.wifiName(this))+"");
+        //Log.i("Wifi Name", _dbHelper.doesWifiExist(Connectivity.wifiName(this))+"");
 
 
         try {

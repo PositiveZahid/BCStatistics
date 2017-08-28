@@ -17,24 +17,26 @@ import iboxbd.broadband.statistics.utils.DateUtils;
 
 public class ConnectionService extends Service {
     DatabaseHelper dbh;
-    String wifiName;
+    String wifiId;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        dbh = new DatabaseHelper(getApplicationContext());
-        wifiName ="";
+        dbh     = new DatabaseHelper(getApplicationContext());
+        wifiId  = "";
 
         try{
 
             if(Connectivity.checkWifiOn(getApplicationContext())){                                  // Checking Wifi
                 if(Connectivity.isRegisteredWithWifi(getApplicationContext())){                     // Check Registered With Wifi
-                    wifiName    = Connectivity.wifiName(getApplicationContext());
+                    if(dbh.doesWifiExist(Connectivity.wifiName(getApplicationContext()))){
+                        wifiId = String.valueOf(dbh.getWIFIID(Connectivity.wifiName(getApplicationContext())));
+                    }
                     Connectivity.isInternetAvailable("http://www.google.com",new Handler() {
                         @Override
                         public void handleMessage(Message msg) {
                             if (msg.what != 1) { // code if not connected
                                 Log.i("#004","Server/Internet Problem");
                                 //dbh.createConnection(new Connection("false","-"));
-                                dbh.createConnection(new Connection("true","true",wifiName,"false","-"));
+                                dbh.createConnection(new Connection("true","true",wifiId,"false","-"));
                                 dbh.close();
                             } else { // code if connected
                                 Log.i("#004","Internet Connected");

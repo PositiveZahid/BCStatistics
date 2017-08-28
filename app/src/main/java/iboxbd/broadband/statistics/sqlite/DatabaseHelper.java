@@ -441,7 +441,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean ipExist     = false;
 
         String selectQuery  = "SELECT  * FROM " + TABLE_WIFI + " WHERE "+ WIFI_NAME + " = '"+wifiName+"'";
-        Log.i("Wifi Query",selectQuery);
         Cursor c            = db.rawQuery(selectQuery, null);
 
         if (c != null && c.getCount()>0){
@@ -454,7 +453,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db   = this.getReadableDatabase();
         long log_id         = 0;
 
-        String selectQuery  = "SELECT  * FROM " + TABLE_WIFI + " WHERE "+ WIFI_NAME + " = "+wifiName;
+        String selectQuery  = "SELECT  * FROM " + TABLE_WIFI + " WHERE "+ WIFI_NAME + " = '"+wifiName+"'";
         Cursor c            = db.rawQuery(selectQuery, null);
 
         if (c != null && c.getCount()>0){

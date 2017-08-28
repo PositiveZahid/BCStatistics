@@ -65,7 +65,7 @@ public class NetworkCall extends AsyncTask<String, String, String> {
             if(dbh.doesWifiExist(wifiName)){
                 wifiId = String.valueOf(dbh.getWIFIID(wifiName));
                 dbh.close();
-                Log.i("#905","IP already Exist inside local database");
+                Log.i("#905","Wifi name already exist local database");
             }else{
                 wifiId = String.valueOf(dbh.createWIFI(new Wifi(wifiName)));
                 dbh.close();
@@ -74,7 +74,7 @@ public class NetworkCall extends AsyncTask<String, String, String> {
             if(dbh.doesIPExist(ip)){
                 ip_id = String.valueOf(dbh.getIPID(ip));
                 dbh.close();
-                Log.i("#905","IP already Exist inside local database");
+                Log.i("#905","IP already exist inside local database");
             }else{
                 ip_id = String.valueOf(dbh.createIP(new IP(ip,ip,name)));
                 dbh.close();
