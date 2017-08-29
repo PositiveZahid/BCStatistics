@@ -170,22 +170,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<Connection> customConnection(String custom){
-        System.out.println("Yes .........."+custom);
         SQLiteDatabase db = this.getReadableDatabase();
         List<Connection> connections = new ArrayList<Connection>();
 
         Cursor c = db.rawQuery(custom, null);
             if (c.moveToFirst()) {
                 do {
-                    Log.d("debug","getting the name from cursor"+ DatabaseUtils.dumpCurrentRowToString(c));
-                    //Connection connection = new Connection();
-//                    connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
-//                    connection.setIsConnected(c.getString(c.getColumnIndex(CONNECTION_ISCONNECT)));
-//                    connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
-//                    connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
+
+                    Connection connection = new Connection();
+                    connection.setID(c.getLong(c.getColumnIndex(CONNECTION_ID)));
+                    connection.setIsWifiOn(c.getString(c.getColumnIndex(CONNECTION_ISWIFION)));
+                    connection.setIsConnectToWifi(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOWIFI)));
+                    connection.setWifiId(c.getString(c.getColumnIndex(CONNECTION_WIFIID)));
+                    connection.setIsConnectToInternet(c.getString(c.getColumnIndex(CONNECTION_ISCONNECTTOINTERNET)));
+                    connection.setIp_id(c.getString(c.getColumnIndex(CONNECTION_IP_ID)));
+                    connection.setIsSynced(c.getString(c.getColumnIndex(CONNECTION_ISSYNCED)));
+                    connection.setDateTime(c.getString(c.getColumnIndex(CONNECTION_DATETIME)));
 
                     // adding to CONNECTION list
-                    //connections.add(connection);
+                    connections.add(connection);
                 } while (c.moveToNext());
             }
         return connections;

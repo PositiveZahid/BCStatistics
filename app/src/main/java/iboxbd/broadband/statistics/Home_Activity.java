@@ -20,18 +20,24 @@ import android.widget.Toast;
 import com.facebook.stetho.Stetho;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import iboxbd.broadband.statistics.ip.NetworkCall;
 import iboxbd.broadband.statistics.ip.Speed;
 import iboxbd.broadband.statistics.model.Connection;
+import iboxbd.broadband.statistics.model.TimeCounting;
 import iboxbd.broadband.statistics.phone.Connectivity;
 import iboxbd.broadband.statistics.sqlite.ExternalDatabase;
 import iboxbd.broadband.statistics.sqlite.SqliteManager;
 import iboxbd.broadband.statistics.sqlite.DatabaseHelper;
 import iboxbd.broadband.statistics.sqlite.SqliteStorage;
+import iboxbd.broadband.statistics.utils.DateUtils;
 
 import static iboxbd.broadband.statistics.sqlite.SqliteBackup.backupDatabase;
 
@@ -40,6 +46,10 @@ public class Home_Activity extends AppCompatActivity {
     private DatabaseHelper _dbHelper;
     private static final int PERMISSION_REQUEST_CODE = 1;
     private ExternalDatabase externalDatabase;
+    private static long tureSeconds     =0;
+    private static long falseSeconds    = 0;
+    private static float truePercentage = 0;
+    private static float falsePercentage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +173,7 @@ public class Home_Activity extends AppCompatActivity {
         int i = 1;
 
 
+
         TableLayout stk = (TableLayout) findViewById(R.id.table_main);
         TableRow tbrow0 = new TableRow(this);
         TextView tv0 = new TextView(this);
@@ -185,14 +196,73 @@ public class Home_Activity extends AppCompatActivity {
 
         while (calendar.get(Calendar.MONTH) == month) {
 
-            SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat format1 = new SimpleDateFormat("dd-MM");
             SimpleDateFormat countingFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            String TRUE     = "SELECT COUNT(*) as count FROM connection WHERE ISCONNECTTOINTERNET = 'true' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
+            String TRUE     = "SELECT * FROM connection where DATETIME > Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME < Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59') and ISWIFION='true' and ISCONNECTTOWIFI='true'";
             String FALSE    = "SELECT COUNT(*) as count FROM connection WHERE ISCONNECTTOINTERNET = 'false' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
 
-            int countTrue   = _dbHelper.customInteger(TRUE,"count");
+            //int countTrue   = _dbHelper.customInteger(TRUE,"count");
             int countFalse  = _dbHelper.customInteger(FALSE,"count");
+            List<Connection> connects = _dbHelper.customConnection(TRUE);
+
+            if(connects.size()!=0){
+                List<TimeCounting> timeCount = new ArrayList<TimeCounting>();
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date1 = sdf.parse("2009-12-31 00:00:00");
+                    Date date2 = sdf.parse("2010-01-31 00:00:00");
+
+
+                    boolean currentStatus   = Boolean.parseBoolean(connects.get(0).getIsConnectToInternet());
+                    boolean lastStatus      = false;
+                    String currentTime      = connects.get(0).getDateTime();
+                    String lastTime         = "";
+                    String temporaryTime    = "";
+
+                    for (Connection c : connects) {
+
+                        if (currentStatus == Boolean.parseBoolean(c.getIsConnectToInternet())) {
+                            lastTime    = c.getDateTime();
+                            lastStatus  = Boolean.parseBoolean(c.getIsConnectToInternet());
+                        } else {
+                            if (sdf.parse(currentTime).after(sdf.parse(lastTime))) {
+                                temporaryTime   = currentTime;
+                                currentTime     = lastTime;
+                                lastTime        = temporaryTime;
+                                lastStatus      = currentStatus;
+                            }
+
+                            long seconds        = 1;
+                            seconds        = DateUtils.getDateDiff(sdf.parse(currentTime), sdf.parse(lastTime), TimeUnit.SECONDS);
+
+                            if(lastStatus == true){
+                                tureSeconds = tureSeconds+seconds;
+                            }else{
+                                falseSeconds = falseSeconds+seconds;
+                            }
+
+                            timeCount.add(new TimeCounting((int) seconds, lastStatus));
+                            currentTime         = c.getDateTime();
+                            currentStatus       = Boolean.parseBoolean(c.getIsConnectToInternet());
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                if((tureSeconds + falseSeconds) !=0) {
+                    System.out.println(TRUE);
+                    truePercentage = (tureSeconds*100) / (tureSeconds + falseSeconds);
+                    falsePercentage =(falseSeconds*100) / (tureSeconds + falseSeconds);
+                }
+            }
+
+
+
+            //System.out.print("(tureSeconds*100) / (tureSeconds + falseSeconds)"+ tureSeconds +" - "+ falseSeconds);
 
 
             TableRow tbrow = new TableRow(this);
@@ -207,18 +277,20 @@ public class Home_Activity extends AppCompatActivity {
             t2v.setGravity(Gravity.CENTER);
             tbrow.addView(t2v);
             TextView t3v = new TextView(this);
-            t3v.setText("" + countTrue);
+            t3v.setText("" +truePercentage +"%");
             t3v.setTextColor(Color.WHITE);
             t3v.setGravity(Gravity.CENTER);
             tbrow.addView(t3v);
             TextView t4v = new TextView(this);
-            t4v.setText("" + countFalse);
+            t4v.setText("" + falsePercentage + "%");
             t4v.setTextColor(Color.WHITE);
             t4v.setGravity(Gravity.CENTER);
             tbrow.addView(t4v);
             stk.addView(tbrow);
             calendar.add(Calendar.DATE, 1);
             i++;
+            truePercentage = 0;
+            falsePercentage = 0;
         }
     }
 }
