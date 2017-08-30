@@ -67,8 +67,6 @@ public class Home_Activity extends AppCompatActivity {
         try {
             table();
 
-
-
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -194,19 +192,95 @@ public class Home_Activity extends AppCompatActivity {
         tbrow0.addView(tv3);
         stk.addView(tbrow0);
 
+        String TRUE     = "SELECT * FROM connection where DATETIME > Datetime('2017-08-29 00:00:00') and DATETIME < Datetime('2017-08-29 23:59:59') and ISWIFION='true' and ISCONNECTTOWIFI='true'";
+        int trueCount = 0;
+        int falseCount = 0;
+        //String FALSE    = "SELECT COUNT(*) as count FROM connection WHERE ISCONNECTTOINTERNET = 'false' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
+
+        //int countTrue   = _dbHelper.customInteger(TRUE,"count");
+        //int countFalse  = _dbHelper.customInteger(FALSE,"count");
+        List<Connection> connects = _dbHelper.customConnection(TRUE);
+
+        if(connects.size()!=0) {
+            List<TimeCounting> timeCount = new ArrayList<TimeCounting>();
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                Date date1 = sdf.parse("2009-12-31 00:00:00");
+                Date date2 = sdf.parse("2010-01-31 00:00:00");
+
+
+                boolean currentStatus = Boolean.parseBoolean(connects.get(0).getIsConnectToInternet());
+                boolean lastStatus = false;
+                String startTime = connects.get(0).getDateTime();
+                String endTime = "";
+                String lastTime = "";
+                String temporaryTime = "";
+                String lastTimeTrue = connects.get(0).getDateTime();
+                String lastTimeFalse = connects.get(0).getDateTime();
+                String startTimeTrue = connects.get(0).getDateTime();
+                String startTimeFalse = connects.get(0).getDateTime();
+
+                for (Connection c : connects) {
+                    System.err.println(c.getIsConnectToInternet()+" --  "+c.getDateTime());
+                    if (c.getIsConnectToInternet().equals("true")) {
+                        falseCount = 0;
+
+                        if(trueCount == 0){
+                            startTimeTrue = c.getDateTime();
+                            long seconds = DateUtils.getDateDiff(sdf.parse(startTimeFalse), sdf.parse(lastTimeFalse), TimeUnit.SECONDS);
+                            falseSeconds = seconds;
+                            System.out.println("false ---- Seconds : "+falseSeconds+" Time : "+DateUtils.convertSecondsToString(seconds));
+                            System.out.println("Now : "+dateFormat.format(sdf.parse(c.getDateTime()))+" lastTimeFalse : "+ dateFormat.format(sdf.parse(lastTimeFalse)));
+                            System.out.println("=====================================");
+                        }else if(trueCount > 1){
+                            //endTime = c.getDateTime();
+                        }
+
+                        lastTimeTrue = c.getDateTime();
+                        //System.out.println("trueCount : "+trueCount);
+                        trueCount++;
+                    } else if(c.getIsConnectToInternet().equals("false")) {
+                        trueCount = 0;
+
+                        if(falseCount == 0){
+                            startTimeFalse = c.getDateTime();
+
+                            long seconds = DateUtils.getDateDiff(sdf.parse(startTimeTrue), sdf.parse(lastTimeTrue), TimeUnit.SECONDS);
+                            tureSeconds =  seconds;
+                            //currentTime = c.getDateTime();
+                            System.out.println("ture  --- Seconds : "+tureSeconds +" Time : "+DateUtils.convertSecondsToString(seconds));
+                            System.out.println("Now : "+dateFormat.format(sdf.parse(c.getDateTime()))+" lastTimeTrue : "+dateFormat.format(sdf.parse(lastTimeTrue)));
+                            System.out.println("=====================================");
+                        }else if(falseCount > 1){
+                            //endTime = c.getDateTime();
+                        }
+
+                        lastTimeFalse = c.getDateTime();
+                        //System.out.println("falseCount : "+falseCount);
+                        falseCount++;
+                    }
+
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         while (calendar.get(Calendar.MONTH) == month) {
 
             SimpleDateFormat format1 = new SimpleDateFormat("dd-MM");
             SimpleDateFormat countingFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            String TRUE     = "SELECT * FROM connection where DATETIME > Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME < Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59') and ISWIFION='true' and ISCONNECTTOWIFI='true'";
-            String FALSE    = "SELECT COUNT(*) as count FROM connection WHERE ISCONNECTTOINTERNET = 'false' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
+            //String TRUE     = "SELECT * FROM connection where DATETIME > Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME < Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59') and ISWIFION='true' and ISCONNECTTOWIFI='true'";
+            //String FALSE    = "SELECT COUNT(*) as count FROM connection WHERE ISCONNECTTOINTERNET = 'false' and DATETIME >= Datetime('"+countingFormat.format(calendar.getTime())+" 00:00:00') and DATETIME <= Datetime('"+countingFormat.format(calendar.getTime())+" 23:59:59')";
 
             //int countTrue   = _dbHelper.customInteger(TRUE,"count");
-            int countFalse  = _dbHelper.customInteger(FALSE,"count");
-            List<Connection> connects = _dbHelper.customConnection(TRUE);
+            //int countFalse  = _dbHelper.customInteger(FALSE,"count");
+            //List<Connection> connects = _dbHelper.customConnection(TRUE);
 
-            if(connects.size()!=0){
+            /*if(connects.size()!=0){
                 List<TimeCounting> timeCount = new ArrayList<TimeCounting>();
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -221,6 +295,30 @@ public class Home_Activity extends AppCompatActivity {
                     String temporaryTime    = "";
 
                     for (Connection c : connects) {
+                        if (currentStatus == true) {
+                            lastTime    = c.getDateTime();
+                            lastStatus  = Boolean.parseBoolean(c.getIsConnectToInternet());
+                            long seconds        = DateUtils.getDateDiff(sdf.parse(currentTime), sdf.parse(lastTime), TimeUnit.SECONDS);
+                            tureSeconds = tureSeconds+seconds;
+                            currentTime         = c.getDateTime();
+                            System.out.println("currentTime , lastTime"+ currentTime +" : "+ lastTime);
+                            currentStatus       = Boolean.parseBoolean(c.getIsConnectToInternet());
+                        } else if(currentStatus == false) {
+                            *//*if (sdf.parse(currentTime).after(sdf.parse(lastTime))) {
+                                temporaryTime   = currentTime;
+                                currentTime     = lastTime;
+                                lastTime        = temporaryTime;
+                                lastStatus      = currentStatus;
+                            }*//*
+                            long seconds        = DateUtils.getDateDiff(sdf.parse(currentTime), sdf.parse(lastTime), TimeUnit.SECONDS);
+                            falseSeconds = falseSeconds+seconds;
+                            timeCount.add(new TimeCounting((int) seconds, lastStatus));
+                            currentTime         = c.getDateTime();
+                            currentStatus       = Boolean.parseBoolean(c.getIsConnectToInternet());
+                        }
+                    }
+
+                    *//*for (Connection c : connects) {
 
                         if (currentStatus == Boolean.parseBoolean(c.getIsConnectToInternet())) {
                             lastTime    = c.getDateTime();
@@ -246,7 +344,7 @@ public class Home_Activity extends AppCompatActivity {
                             currentTime         = c.getDateTime();
                             currentStatus       = Boolean.parseBoolean(c.getIsConnectToInternet());
                         }
-                    }
+                    }*//*
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -254,11 +352,11 @@ public class Home_Activity extends AppCompatActivity {
 
 
                 if((tureSeconds + falseSeconds) !=0) {
-                    System.out.println(TRUE);
+                    //System.out.println(TRUE);
                     truePercentage = (tureSeconds*100) / (tureSeconds + falseSeconds);
                     falsePercentage =(falseSeconds*100) / (tureSeconds + falseSeconds);
                 }
-            }
+            }*/
 
 
 
