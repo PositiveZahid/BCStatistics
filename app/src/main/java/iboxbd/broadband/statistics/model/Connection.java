@@ -17,7 +17,7 @@ public class Connection extends DB_BASIC {
 
     }
 
-    public Connection(String isConnectToInternet,String ip_id) {
+    public Connection(String isConnectToInternet, String ip_id) {
         this.isConnectToInternet = isConnectToInternet;
         this.ip_id = ip_id;
         this.isSynced = "false";
@@ -99,5 +99,16 @@ public class Connection extends DB_BASIC {
         this.dateTime = dateTime;
     }
 
-
+    @Override
+    public String toString() {
+        return "Connection{" +
+                "ip='" + ip_id + '\'' +
+                ", Wifi='" + isWifiOn + '\'' +
+                ", wifi='" + isConnectToWifi + '\'' +
+                ", wifiId='" + wifiId + '\'' +
+                ", internet='" + isConnectToInternet + '\'' +
+                ", Synced='" + isSynced + '\'' +
+                ", Time='" + dateTime + '\'' +
+                '}';
+    }
 }

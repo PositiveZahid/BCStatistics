@@ -12,13 +12,34 @@ package iboxbd.broadband.statistics.model;
 public class TimeCounting {
     private int time;
     private boolean status;
+    private String startTime;
+    private String endTime;
+    private String wifiId;
 
-    public TimeCounting(int time, boolean status) {
-        this.time = time;
-        this.status = status;
+    public String getWifiId() {
+        return wifiId;
     }
 
-    
+    public void setWifiId(String wifiId) {
+        this.wifiId = wifiId;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
     public int getTime() {
         return time;
     }
@@ -34,6 +55,15 @@ public class TimeCounting {
     public void setStatus(boolean status) {
         this.status = status;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return "TimeCounting{" +
+                "time=" + time +
+                ", status=" + status +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", wifiId='" + wifiId + '\'' +
+                '}';
+    }
 }

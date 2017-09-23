@@ -19,6 +19,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
             <RelativeLayout
                 android:id="@+id/RelativeLayout1"
                 android:layout_width="fill_parent"
@@ -28,11 +34,13 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp">
 
-                <TableLayout
+
+
+<!--                <TableLayout
                     android:id="@+id/table_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"></TableLayout>
+                    android:layout_centerHorizontal="true"></TableLayout>-->
             </RelativeLayout>
         </HorizontalScrollView>
     </ScrollView>
