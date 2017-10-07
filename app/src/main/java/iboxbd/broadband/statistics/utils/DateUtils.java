@@ -9,10 +9,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class DateUtils {
-    public static Calendar now                      = Calendar.getInstance();
-    //public static Calendar dayStart 	            = new Calendar(now.get(Calendar.YEAR),now.get(Calendar.MONTH), now.get(Calendar.DATE), 00,00,00);
-    //public static Calendar dayEnd 		            = new Calendar(now.get(Calendar.YEAR),now.get(Calendar.MONTH), now.get(Calendar.DATE), 23,59,59);
-
     public static final SimpleDateFormat FULL_DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public static Date ValueToDate(String val) throws ParseException {

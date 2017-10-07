@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -58,13 +60,11 @@ public class Home_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Stetho.initializeWithDefaults(this);
         externalDatabase = new ExternalDatabase(this);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.home_info);
-        GetDB();
-        //new Speed(Home_Activity.this).execute();
-        //new NetworkCall(getApplicationContext()).execute();
-        //_dbHelper.doesWifiExist(Connectivity.wifiName(this));
-        //Log.i("Wifi Name", _dbHelper.doesWifiExist(Connectivity.wifiName(this))+"");
 
+        GetDB();
 
         try {
             table();
@@ -85,9 +85,6 @@ public class Home_Activity extends AppCompatActivity {
     private void InitDB() {
         //Initialize DB handler
         _dbHelper = new DatabaseHelper(this);
-
-        //Adding table based on class TEST reflection
-        //_dbHelper.CreateTable(new Connection());
     }
 
     @Override
